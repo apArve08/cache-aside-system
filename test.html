@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Self-Learn Roadmap · Advanced Systems & AI Core</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   EMIL KOWALSKI–INSPIRED SYSTEM
+   Restraint · soft depth · one accent · spring motion · whitespace
+═══════════════════════════════════════════════════════════════ */
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  color-scheme:dark;
+
+  /* near-monochrome base */
+  --bg:#08080a;
+  --bg-2:#0c0c0f;
+  --surface:#111114;
+  --surface-2:#161619;
+  --surface-hover:#1a1a1e;
+  --line:rgba(255,255,255,.06);
+  --line-2:rgba(255,255,255,.09);
+
+  /* text ramp */
+  --tx:#f4f4f5;
+  --tx-2:#a1a1aa;
+  --tx-3:#71717a;
+  --tx-4:#52525b;
+
+  /* single accent — a quiet indigo */
+  --ac:#7c7cff;
+  --ac-soft:rgba(124,124,255,.12);
+  --ac-line:rgba(124,124,255,.22);
+
+  /* category tints (used sparingly, low-sat) */
+  --c-backend:#8b8bff;
+  --c-neural:#e58bd0;
+  --c-hardware:#6fdcc0;
+  --c-mlops:#f0a878;
+  --c-compiler:#9fd67a;
+  --c-cs:#c99bf0;
+  --c-systems:#7cc4f0;
+  --c-career:#f09878;
+  --c-active:#f0c878;
+
+  /* soft shadows — Emil's signature depth */
+  --sh-sm:0 1px 2px rgba(0,0,0,.4);
+  --sh-md:0 4px 16px rgba(0,0,0,.35), 0 1px 3px rgba(0,0,0,.4);
+  --sh-lg:0 12px 40px rgba(0,0,0,.45), 0 2px 8px rgba(0,0,0,.35);
+  --sh-glow:0 0 0 1px var(--ac-line), 0 8px 32px rgba(124,124,255,.12);
+
+  --r-sm:8px;
+  --r-md:14px;
+  --r-lg:20px;
+  --r-xl:28px;
+
+  --ease:cubic-bezier(.32,.72,0,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--tx);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  letter-spacing:-.011em;
+  overflow-x:hidden;
+}
+
+/* subtle radial ambience, not a grid */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(900px 600px at 15% -5%, rgba(124,124,255,.07), transparent 60%),
+    radial-gradient(700px 500px at 100% 0%, rgba(111,220,192,.04), transparent 55%);
+}
+
+.wrap{position:relative;z-index:1;max-width:940px;margin:0 auto;padding:0 24px 140px}
+
+::selection{background:var(--ac-soft);color:#fff}
+
+/* ── scrollbar ── */
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:10px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--tx-4)}
+
+/* ═══════════════════════ HERO ═══════════════════════ */
+.hero{padding:120px 0 72px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12.5px;font-weight:500;color:var(--tx-2);
+  padding:7px 14px 7px 12px;border-radius:100px;
+  background:var(--surface);box-shadow:var(--sh-sm);
+  border:1px solid var(--line);
+  margin-bottom:32px;
+  animation:rise .7s var(--ease) both;
+}
+.hero-badge .dot{
+  width:7px;height:7px;border-radius:50%;background:var(--ac);
+  box-shadow:0 0 0 3px var(--ac-soft);
+}
+.hero h1{
+  font-size:clamp(38px,6.5vw,68px);
+  font-weight:640;line-height:1.04;letter-spacing:-.035em;
+  margin-bottom:24px;
+  animation:rise .7s var(--ease) .05s both;
+}
+.hero h1 .muted{color:var(--tx-3)}
+.hero-sub{
+  font-size:17px;color:var(--tx-2);max-width:600px;line-height:1.6;
+  letter-spacing:-.014em;
+  animation:rise .7s var(--ease) .1s both;
+}
+
+.stat-row{
+  display:flex;flex-wrap:wrap;gap:12px;margin-top:48px;
+  animation:rise .7s var(--ease) .15s both;
+}
+.stat{
+  flex:1;min-width:130px;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:20px 22px;
+  box-shadow:var(--sh-sm);
+  transition:transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease);
+}
+.stat:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--line-2)}
+.stat-val{font-size:30px;font-weight:660;letter-spacing:-.03em;line-height:1}
+.stat-lbl{font-size:12.5px;color:var(--tx-3);margin-top:8px;letter-spacing:-.005em}
+
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════ NAV ═══════════════════════ */
+.nav{
+  position:sticky;top:16px;z-index:50;
+  display:flex;gap:4px;flex-wrap:wrap;
+  padding:8px;margin:24px 0 8px;
+  background:rgba(17,17,20,.7);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border:1px solid var(--line);border-radius:100px;
+  box-shadow:var(--sh-md);
+}
+.nav a{
+  font-size:12.5px;font-weight:500;color:var(--tx-3);
+  padding:7px 13px;border-radius:100px;text-decoration:none;
+  transition:color .25s var(--ease), background .25s var(--ease);
+  white-space:nowrap;
+}
+.nav a:hover{color:var(--tx);background:var(--surface-2)}
+
+/* ═══════════════════════ PHASE HEADER ═══════════════════════ */
+.phase{
+  display:flex;align-items:center;gap:16px;
+  margin:80px 0 28px;padding-bottom:20px;
+  border-bottom:1px solid var(--line);
+}
+.phase-tag{
+  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ac);padding:5px 11px;border-radius:100px;
+  background:var(--ac-soft);white-space:nowrap;
+}
+.phase-name{font-size:22px;font-weight:600;letter-spacing:-.02em;flex:1}
+.phase-range{font-size:13px;color:var(--tx-4);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* ═══════════════════════ PROJECT CARD ═══════════════════════ */
+.grid{display:flex;flex-direction:column;gap:12px}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  box-shadow:var(--sh-sm);
+  transition:box-shadow .45s var(--ease), border-color .45s var(--ease), transform .45s var(--ease);
+}
+.card:hover{box-shadow:var(--sh-md);border-color:var(--line-2)}
+.card.open{box-shadow:var(--sh-lg);border-color:var(--line-2)}
+
+.card-head{
+  display:flex;align-items:center;gap:18px;
+  padding:22px 24px;cursor:pointer;user-select:none;
+}
+.pid{
+  font-size:11px;font-weight:600;letter-spacing:.04em;
+  font-variant-numeric:tabular-nums;
+  padding:5px 10px;border-radius:8px;white-space:nowrap;flex-shrink:0;
+  background:var(--surface-2);color:var(--tx-2);
+  border:1px solid var(--line);
+}
+.card-meta{flex:1;min-width:0}
+.card-meta h3{
+  font-size:16.5px;font-weight:600;letter-spacing:-.017em;
+  line-height:1.3;margin-bottom:3px;
+}
+.card-meta .tag{
+  font-size:12.5px;color:var(--tx-3);line-height:1.45;
+  overflow:hidden;text-overflow:ellipsis;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;
+}
+.card-side{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.wks{font-size:12px;color:var(--tx-4);white-space:nowrap;font-variant-numeric:tabular-nums}
+.chev{
+  width:28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;flex-shrink:0;
+  background:var(--surface-2);color:var(--tx-3);
+  transition:transform .45s var(--ease-spring), background .3s var(--ease), color .3s var(--ease);
+}
+.card:hover .chev{background:var(--surface-hover);color:var(--tx-2)}
+.card.open .chev, .hack.open .chev{transform:rotate(180deg);background:var(--ac-soft);color:var(--ac)}
+.chev svg{width:14px;height:14px}
+
+/* body — animated open */
+.card-body{
+  display:grid;grid-template-rows:0fr;
+  transition:grid-template-rows .5s var(--ease);
+}
+.card.open .card-body{grid-template-rows:1fr}
+.card-body-inner{overflow:hidden;border-top:1px solid var(--line)}
+
+.intro{
+  padding:22px 24px 6px;font-size:14.5px;color:var(--tx-2);
+  line-height:1.6;letter-spacing:-.01em;
+}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:680px){.cols{grid-template-columns:1fr}}
+.col{padding:20px 24px}
+.col + .col{border-left:1px solid var(--line)}
+@media(max-width:680px){.col + .col{border-left:none;border-top:1px solid var(--line)}}
+.col-label{
+  font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--tx-4);margin-bottom:14px;
+}
+.col ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.col ul li{
+  font-size:13.5px;color:var(--tx-2);line-height:1.5;
+  display:flex;gap:10px;align-items:flex-start;letter-spacing:-.008em;
+}
+.col ul li::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--tx-4);flex-shrink:0;margin-top:8px;
+}
+
+/* week list */
+.weeks{padding:8px 24px 22px;border-top:1px solid var(--line)}
+.weeks .col-label{margin:16px 0 14px}
+.wk{
+  display:grid;grid-template-columns:64px 1fr;gap:16px;
+  padding:12px 0;border-bottom:1px solid var(--line);
+}
+.wk:last-child{border-bottom:none}
+.wk-no{
+  font-size:11px;font-weight:600;color:var(--tx-4);
+  letter-spacing:.04em;font-variant-numeric:tabular-nums;padding-top:2px;
+}
+.wk-body strong{
+  display:block;font-size:14px;font-weight:600;color:var(--tx);
+  margin-bottom:4px;letter-spacing:-.012em;
+}
+.wk-body p{font-size:13px;color:var(--tx-3);line-height:1.55}
+
+/* chips */
+.chips{
+  display:flex;flex-wrap:wrap;gap:7px;
+  padding:18px 24px;border-top:1px solid var(--line);
+  background:var(--bg-2);
+}
+.chip{
+  font-size:11.5px;font-weight:500;color:var(--tx-2);
+  padding:5px 11px;border-radius:100px;
+  background:var(--surface-2);border:1px solid var(--line);
+  letter-spacing:-.005em;
+}
+
+/* notes */
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--line)}
+@media(max-width:680px){.notes{grid-template-columns:1fr}}
+.note{padding:18px 24px;font-size:13px;line-height:1.6;color:var(--tx-2)}
+.note + .note{border-left:1px solid var(--line)}
+@media(max-width:680px){.note + .note{border-left:none;border-top:1px solid var(--line)}}
+.note-lbl{
+  font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  margin-bottom:7px;display:flex;align-items:center;gap:7px;
+}
+.note.warn .note-lbl{color:#e0b850}
+.note.tip .note-lbl{color:#5fc9a8}
+
+/* connects strip */
+.connects{
+  padding:16px 24px;border-top:1px solid var(--line);
+  font-size:13px;color:var(--ac);line-height:1.55;
+  background:var(--ac-soft);letter-spacing:-.008em;
+}
+
+/* difficulty meters */
+.diff{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--line)}
+@media(max-width:680px){.diff{grid-template-columns:1fr}}
+.diff-col{padding:18px 24px}
+.diff-col + .diff-col{border-left:1px solid var(--line)}
+@media(max-width:680px){.diff-col + .diff-col{border-left:none;border-top:1px solid var(--line)}}
+.diff-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.diff-name{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--tx-4)}
+.diff-score{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.diff-track{height:5px;border-radius:100px;background:var(--surface-2);overflow:hidden}
+.diff-fill{height:100%;border-radius:100px;transition:width 1s var(--ease)}
+
+/* ═══════════════════════ HACKATHONS ═══════════════════════ */
+.hack-intro{
+  font-size:15px;color:var(--tx-2);max-width:600px;line-height:1.6;
+  margin-bottom:28px;letter-spacing:-.011em;
+}
+.hack-grid{display:flex;flex-direction:column;gap:12px}
+.hack{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:var(--sh-sm);
+  transition:box-shadow .45s var(--ease), border-color .45s var(--ease);
+}
+.hack:hover{box-shadow:var(--sh-md);border-color:var(--line-2)}
+.hack.open{box-shadow:var(--sh-lg);border-color:var(--line-2)}
+.hack-head{
+  display:flex;align-items:flex-start;gap:18px;
+  padding:22px 24px;cursor:pointer;user-select:none;
+}
+.hack-icon{
+  width:44px;height:44px;border-radius:var(--r-md);flex-shrink:0;
+  display:grid;place-items:center;font-size:20px;
+  background:var(--surface-2);border:1px solid var(--line);
+}
+.hack-headmeta{flex:1;min-width:0}
+.hack-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.hack-name{font-size:16.5px;font-weight:600;letter-spacing:-.017em}
+.hack-loc{
+  font-size:11.5px;font-weight:500;color:var(--tx-3);
+  padding:3px 9px;border-radius:100px;background:var(--surface-2);
+  border:1px solid var(--line);display:inline-flex;align-items:center;gap:5px;
+}
+.hack-loc svg{width:11px;height:11px;opacity:.7}
+.hack-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.status{
+  font-size:12px;font-weight:600;padding:5px 12px;border-radius:100px;
+  display:inline-flex;align-items:center;gap:7px;letter-spacing:-.004em;
+}
+.status .sdot{width:6px;height:6px;border-radius:50%}
+.status.submitted{background:rgba(111,220,192,.1);color:#6fdcc0;border:1px solid rgba(111,220,192,.2)}
+.status.submitted .sdot{background:#6fdcc0}
+.status.progress{background:rgba(240,200,120,.1);color:#f0c878;border:1px solid rgba(240,200,120,.22)}
+.status.progress .sdot{background:#f0c878;animation:pulse 1.8s var(--ease) infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(240,200,120,.4)}50%{opacity:.6;box-shadow:0 0 0 5px rgba(240,200,120,0)}}
+.proj-name{font-size:13px;color:var(--tx-2);font-weight:500}
+.proj-name span{color:var(--tx-4);font-weight:400}
+
+/* hack body — same animated open pattern as .card-body */
+.hack-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s var(--ease)}
+.hack.open .hack-body{grid-template-rows:1fr}
+.hack-body-inner{overflow:hidden;border-top:1px solid var(--line)}
+
+/* metrics table — used for result-based projects like Factory Guardian */
+.metrics{padding:8px 24px 22px;border-top:1px solid var(--line)}
+.metrics .col-label{margin:16px 0 12px}
+.metric-head{
+  display:grid;grid-template-columns:1fr 84px 84px;gap:12px;
+  padding-bottom:9px;border-bottom:1px solid var(--line-2);
+  font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tx-4);
+}
+.metric-row{
+  display:grid;grid-template-columns:1fr 84px 84px;gap:12px;align-items:center;
+  padding:11px 0;border-bottom:1px solid var(--line);font-size:13px;
+}
+.metric-row:last-child{border-bottom:none}
+.metric-row .m-name{color:var(--tx-2);letter-spacing:-.008em}
+.metric-row .m-before{color:var(--tx-4);text-align:right;font-variant-numeric:tabular-nums;font-size:12.5px}
+.metric-row .m-after{color:var(--ac);text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ═══════════════════════ FOOTER ═══════════════════════ */
+.footer{
+  margin-top:88px;padding:40px;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);box-shadow:var(--sh-md);
+}
+.footer h2{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--tx-4);margin-bottom:28px}
+.foot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:680px){.foot-grid{grid-template-columns:1fr}}
+.foot-box{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-md);padding:24px}
+.foot-val{font-size:34px;font-weight:660;letter-spacing:-.03em;line-height:1}
+.foot-lbl{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--tx-3);margin-top:10px}
+.foot-desc{font-size:13px;color:var(--tx-3);margin-top:12px;line-height:1.55}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s var(--ease), transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ═══════════ HERO ═══════════ -->
+<header class="hero">
+  <div class="hero-badge"><span class="dot"></span>Master Learning Blueprint · Systems & Infrastructure</div>
+  <h1>59 deep infrastructure builds.<br/><span class="muted">Shipped across two years.</span></h1>
+  <p class="hero-sub">A self-directed curriculum spanning performant backends, neural mathematics, GPU hardware, MLOps, compilers, CS fundamentals, cryptography, and career-targeted builds for Malaysia and frontier labs.</p>
+  <div class="stat-row">
+    <div class="stat"><div class="stat-val">59</div><div class="stat-lbl">Core projects</div></div>
+    <div class="stat"><div class="stat-val">8</div><div class="stat-lbl">Phases</div></div>
+    <div class="stat"><div class="stat-val">4</div><div class="stat-lbl">Hackathons</div></div>
+    <div class="stat"><div class="stat-val">2 yrs</div><div class="stat-lbl">Timeline</div></div>
+  </div>
+</header>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav class="nav">
+  <a href="#ph1">Backend</a>
+  <a href="#ph2">Neural Math</a>
+  <a href="#ph3">Hardware</a>
+  <a href="#ph4">MLOps</a>
+  <a href="#ph5">Compilers</a>
+  <a href="#ph6">CS Core</a>
+  <a href="#ph7">Systems Craft</a>
+  <a href="#ph8">Career</a>
+  <a href="#hack">Hackathons</a>
+</nav>
+
+<script>
+function tog(el){el.closest('.card, .hack').classList.toggle('open')}
+</script>
+
+<!-- ═══════════ PHASE 01 ═══════════ -->
+<div id="ph1" class="phase reveal">
+  <span class="phase-tag">Phase 01</span>
+  <span class="phase-name">Backend &amp; Concurrency</span>
+  <span class="phase-range">P1–P7 · P52–P59</span>
+</div>
+<div class="grid">
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P1</span>
+      <div class="card-meta"><h3>Local AI Evaluator &amp; RAG Pipeline</h3><div class="tag">Vector math · Open-source LLMs · Semantic search · pgvector</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A retrieval-augmented generation stack that benchmarks two local LLMs against each other using a self-built vector search pipeline.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Document ingestion &amp; chunking pipeline (PDF/text → vectors)</li><li>pgvector database storing semantic embeddings</li><li>Model benchmarking harness across 2 local LLMs</li><li>Next.js analytics dashboard for latency &amp; accuracy</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Embedding mechanics — L2, cosine similarity</li><li>Chunking tradeoffs — recursive vs semantic</li><li>Full RAG loop: retrieve, augment, generate</li><li>TTFT, tokens/sec, accuracy as metrics</li></ul></div>
+      </div>
+      <div class="weeks">
+        <div class="col-label">Week by week</div>
+        <div class="wk"><div class="wk-no">WK 01</div><div class="wk-body"><strong>Ingestion &amp; Chunking</strong><p>Install Ollama, pull llama3.2:3b + nomic-embed-text. Python ingest with RecursiveCharacterTextSplitter. Test chunk sizes 256/512/1024.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 02</div><div class="wk-body"><strong>The Vector Layer</strong><p>PostgreSQL + pgvector in Docker. vector(768) column. Batch-embed chunks. Manual cosine query: top-5 similar chunks.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 03</div><div class="wk-body"><strong>The Benchmark Core</strong><p>20 test questions. Loop: question → cosine query → top-3 chunks → both models. Log TTFT, tokens/sec, accuracy to JSON.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 04</div><div class="wk-body"><strong>Analytics Dashboard</strong><p>Next.js 14 + Recharts. Latency bar, tokens/sec line, accuracy scatter. Live "Run Test" input appending results.</p></div></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">pgvector</span><span class="chip">Ollama</span><span class="chip">Next.js</span><span class="chip">LangChain</span><span class="chip">nomic-embed-text</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P2</span>
+      <div class="card-meta"><h3>Distributed Cache-Aside System</h3><div class="tag">Redis · Cache invalidation · Event-driven · Race protection</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A two-tier PostgreSQL/Redis cache layer that proves, under real load, the difference between naive queries and cache-aside reads.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>PostgreSQL + Redis two-tier layer via Docker Compose</li><li>Cache-Aside GET middleware — Redis first, miss → PG → cache with TTL</li><li>Atomic write path: SQL UPDATE + Redis DEL in sequence</li><li>Cache stampede protection via Redis SETNX mutex</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Cache-Aside vs Write-Through vs Read-Through</li><li>TTL tradeoffs: misses vs stale data</li><li>Dirty read problem and atomic invalidation</li><li>k6 VU ramping, p95/p99 metrics</li></ul></div>
+      </div>
+      <div class="weeks">
+        <div class="col-label">Week by week</div>
+        <div class="wk"><div class="wk-no">WK 05</div><div class="wk-body"><strong>Two-Tier Setup</strong><p>Docker Compose: PostgreSQL + Redis. Seed 20,000 records. Baseline Express/TypeScript CRUD — zero caching. Log latency.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 06</div><div class="wk-body"><strong>Cache-Aside Middleware</strong><p>ioredis. GET middleware: hit return → miss: PG fetch → SET TTL 60s. X-Cache header. Confirm second call &lt;2ms.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 07</div><div class="wk-body"><strong>Atomic Invalidation</strong><p>PUT/PATCH: SQL UPDATE + Redis DEL. Dirty-read test. SETNX mutex. Integration test: create → cache → update → fresh read.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 08</div><div class="wk-body"><strong>Load Test Proof</strong><p>k6: ramp 0→3,000 VUs over 60s. Run caching OFF then ON. Comparison chart — the portfolio proof.</p></div></div>
+      </div>
+      <div class="chips"><span class="chip">Node.js</span><span class="chip">Redis</span><span class="chip">PostgreSQL</span><span class="chip">k6</span><span class="chip">ioredis</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P3</span>
+      <div class="card-meta"><h3>High-Performance Inventory Reservation Engine</h3><div class="tag">Lua atomic scripts · BullMQ · Thread safety · Eventual consistency</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A Redis-Lua powered checkout engine that eliminates overselling race conditions under thousands of concurrent buyers.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Redis stock gateway: in-memory counters</li><li>Broken endpoint first — prove the race condition</li><li>Lua atomic script: IF stock&gt;0 THEN DECRBY 1</li><li>BullMQ pipeline: checkouts → queue → PostgreSQL</li><li>Chaos test: 2,000 requests for 5 units, 4 assertions</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Race conditions: the read-write interleaving window</li><li>Redis single-threaded model, Lua atomicity</li><li>EVALSHA: pre-loading scripts via SCRIPT LOAD</li><li>Eventual consistency: μs response, background writes</li><li>Chaos engineering: invariant assertions</li></ul></div>
+      </div>
+      <div class="weeks">
+        <div class="col-label">Week by week</div>
+        <div class="wk"><div class="wk-no">WK 09</div><div class="wk-body"><strong>Broken First</strong><p>Checkout WITHOUT protection: GET → check → DECR as three calls. 500 concurrent requests. Screenshot negative stock.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 10</div><div class="wk-body"><strong>Lua Atomic Lock</strong><p>Lua script via SCRIPT LOAD + EVALSHA. Re-run — zero overselling. Add 10-min reservation expiry.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 11</div><div class="wk-body"><strong>Async Worker Pipeline</strong><p>BullMQ v5. Push order on success. Worker writes with idempotency. 3x retry, dead-letter queue, Board UI.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 12</div><div class="wk-body"><strong>The Chaos Script</strong><p>2,000 requests, 5 units. Assert: 5×200, 1,995×409, Redis=0, PG count=5. Run 3× — same result.</p></div></div>
+      </div>
+      <div class="chips"><span class="chip">TypeScript</span><span class="chip">Redis Lua</span><span class="chip">BullMQ</span><span class="chip">PostgreSQL</span><span class="chip">EVALSHA</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P4</span>
+      <div class="card-meta"><h3>Arveend Terminal — Financial Intelligence System</h3><div class="tag">WebSockets · RAG · Live screener · Paper trading · Finnhub API</div></div>
+      <div class="card-side"><span class="wks">parallel</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A full-stack financial terminal combining live market data, AI sentiment analysis, and simulated trading in one WebSocket-driven app.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>V1: Stock search, candlestick charts, P&amp;L tracker, JWT auth</li><li>V2: Ollama sentiment, RAG earnings summarizer, screener</li><li>V3: Socket.io 500ms ticks, Redis alerts, paper trading</li><li>Mock fixture layer — never block on Finnhub limits</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>WebSocket rooms, reconnection, broadcasting</li><li>Circular buffer for tick history without re-render</li><li>Portfolio accounting: cost basis, unrealised P&amp;L</li><li>P1 RAG + P2 Cache + P3 atomic all wire in here</li></ul></div>
+      </div>
+      <div class="weeks">
+        <div class="col-label">Phase breakdown</div>
+        <div class="wk"><div class="wk-no">PH 01</div><div class="wk-body"><strong>Core Engine · Wk 1–4</strong><p>Finnhub + mock fixtures. PostgreSQL schema. JWT auth. SQL P&amp;L. Candlestick chart. Deploy to Railway.</p></div></div>
+        <div class="wk"><div class="wk-no">PH 02</div><div class="wk-body"><strong>AI Intelligence · Wk 5–8</strong><p>Ollama sentiment: 10 articles → {score, label, reasoning}. RAG earnings via P1 pgvector. Screener table.</p></div></div>
+        <div class="wk"><div class="wk-no">PH 03</div><div class="wk-body"><strong>Streaming &amp; Trading · Wk 9–12</strong><p>Socket.io 500ms ticks. Client circular buffer. Redis alerts. Paper wallet using P3 Lua atomic pattern.</p></div></div>
+      </div>
+      <div class="chips"><span class="chip">Next.js 14</span><span class="chip">Socket.io</span><span class="chip">PostgreSQL</span><span class="chip">Redis</span><span class="chip">Ollama</span><span class="chip">Finnhub API</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P5</span>
+      <div class="card-meta"><h3>Visual Multi-Agent Workspace</h3><div class="tag">Event orchestration · Prompt injection · Live WebSocket · BullMQ sequencing</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A three-agent AI development team — architect, developer, QA — that collaborates on real coding tasks through a live orchestration canvas.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Three agents: Architect (DeepSeek-r1), Developer (Qwen2.5-coder), QA (Llama3.1)</li><li>BullMQ dependency chains: Developer blocked until Architect approved</li><li>Human-in-the-loop approval gates</li><li>Next.js swimlane canvas: Queued / Thinking / Writing / Review</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Multi-agent context: isolated windows, no shared state</li><li>BullMQ job dependency resolution</li><li>Streaming buffers: partial token delivery, no re-renders</li><li>Producer-consumer: orchestrator to typed workers</li></ul></div>
+      </div>
+      <div class="weeks">
+        <div class="col-label">Week by week</div>
+        <div class="wk"><div class="wk-no">WK 13</div><div class="wk-body"><strong>Orchestrator Foundation</strong><p>Multi-model Ollama. Task decomposer: prompt → JSON subtasks. BullMQ deps. Worker stubs. Socket.io server.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 14</div><div class="wk-body"><strong>Agents + Canvas</strong><p>Architect streams to Socket.io. Developer uses architecture as context. QA reviews. Swimlane + approval gate.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 15</div><div class="wk-body"><strong>E2E Test + Docs</strong><p>Submit real task: REST CRUD API. Measure pipeline time. History to PostgreSQL. README + Loom.</p></div></div>
+      </div>
+      <div class="chips"><span class="chip">Next.js</span><span class="chip">Socket.io</span><span class="chip">BullMQ</span><span class="chip">Ollama</span><span class="chip">DeepSeek-r1</span><span class="chip">Qwen2.5-coder</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P6</span>
+      <div class="card-meta"><h3>AI Fusion Gateway</h3><div class="tag">Parallel inference · Response fusion · Consensus scoring · Intelligent routing</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A gateway that queries multiple LLMs in parallel and fuses their answers into a single, confidence-scored response.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>AI gateway routing prompts to multiple LLMs at once</li><li>Response fusion layer scoring outputs under weight matrices</li><li>Router evaluating requests against model capability profiles</li><li>Live WebSocket dashboard: tokens, costs, consensus stats</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Parallel async execution &amp; Fan-Out / Fan-In</li><li>Response ranking, confidence bounds, consensus mapping</li><li>Dynamic routing, fallback, transactional retries</li><li>Streaming + microsecond latency benchmarking</li></ul></div>
+      </div>
+      <div class="weeks">
+        <div class="col-label">Week by week</div>
+        <div class="wk"><div class="wk-no">WK 16</div><div class="wk-body"><strong>Multi-Model Gateway</strong><p>Ollama multi-model. Async Fan-Out via Promise.all. Map output metrics to JSON streams.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 17</div><div class="wk-body"><strong>Response Fusion Engine</strong><p>Parser tracking string similarity. Voting loops on confidence, weighted score integration.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 18</div><div class="wk-body"><strong>Intelligent Routing</strong><p>Rule-based domains: Code→Qwen, Math→DeepSeek, Prose→Llama. Automated fallback paths.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 19</div><div class="wk-body"><strong>Live Fusion UI</strong><p>Real-time WebSocket dashboard. Unified generation + latency charts, token cost, consensus logs.</p></div></div>
+      </div>
+      <div class="chips"><span class="chip">Next.js</span><span class="chip">Express</span><span class="chip">TypeScript</span><span class="chip">Ollama</span><span class="chip">WebSockets</span><span class="chip">Redis</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P7</span>
+      <div class="card-meta"><h3>Semantic Search &amp; Knowledge Platform</h3><div class="tag">Embeddings · Hybrid Search · Vector Database · Retrieval Pipeline</div></div>
+      <div class="card-side"><span class="wks">5 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">An enterprise-grade retrieval platform combining keyword and vector search with reranking to make document Q&amp;A actually accurate.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Enterprise retrieval platform scaling deep text indexing</li><li>Hybrid BM25 keyword + semantic vector search</li><li>Cross-Encoder reranking tier filtering chunks</li><li>Evaluation dashboard: Recall@K, precision profiles</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Cosine similarity, embedding bounds, metadata mapping</li><li>Vector indexing internals (IVF vs HNSW)</li><li>Reciprocal Rank Fusion merging query indices</li><li>Context optimization, dedup, citation bounds</li></ul></div>
+      </div>
+      <div class="weeks">
+        <div class="col-label">Week by week</div>
+        <div class="wk"><div class="wk-no">WK 20</div><div class="wk-body"><strong>Vector Pipeline</strong><p>Optimized chunking. Embed files, bind rows in PostgreSQL, target indexes via pgvector schemas.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 21</div><div class="wk-body"><strong>Search Engine Core</strong><p>Similarity search with metadata filters. Profile execution across cluster parameters via raw SQL.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 22</div><div class="wk-body"><strong>Hybrid Search Layer</strong><p>Keyword indexes beside embeddings. Combine via reciprocal ranking matrices.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 23</div><div class="wk-body"><strong>Reranking Tier</strong><p>Cross-Encoder pulling top hits into tight, non-redundant context with clean citations.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 24</div><div class="wk-body"><strong>Evaluation Platform</strong><p>Regression analytics: Recall@K, Precision@K, MRR across changing workloads.</p></div></div>
+      </div>
+      <div class="chips"><span class="chip">PostgreSQL</span><span class="chip">pgvector</span><span class="chip">Python</span><span class="chip">FastAPI</span><span class="chip">Ollama</span><span class="chip">Docker</span></div>
+    </div></div>
+  </div>
+
+  <!-- ACTIVE BUILDS P52-P59 -->
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P52</span>
+      <div class="card-meta"><h3>NanoLake</h3><div class="tag">DuckDB-Wasm · Browser-native SQL · WASM workers · Parquet compression</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A local-first analytics workspace that runs SQL directly on huge CSV/JSON files inside the browser, no server required.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>UI shell: table tree, SQL editor, dynamic SVG charts</li><li>Drag-and-drop ingestion streaming huge CSV/JSON to memory</li><li>Single-threaded Wasm database running SQL in-tab</li><li>Compression pipeline exporting to binary Parquet</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>WASM background workers inside client tabs</li><li>Memory management for 500MB+ files without locking</li><li>Hand-written Canvas/SVG rendering, no chart libraries</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Next.js Static</span><span class="chip">TypeScript</span><span class="chip">Tailwind</span><span class="chip">DuckDB-Wasm</span><span class="chip">IndexedDB</span></div>
+      <div class="diff">
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">Human hand-coded</span><span class="diff-score" style="color:#e0808a">8 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:80%;background:#e0808a"></div></div></div>
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">AI-assisted sprint</span><span class="diff-score" style="color:#6fdcc0">3 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:30%;background:#6fdcc0"></div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P53</span>
+      <div class="card-meta"><h3>FlexSQL Workbench</h3><div class="tag">AST lexer engine · DAG dependency resolver · Generator mock data factory</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A database blueprint compiler that turns raw CREATE TABLE scripts into realistic, relationally-consistent mock datasets.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Split-pane: CREATE TABLE input, .sql/.csv output</li><li>AST lexer analyzing DB inputs, matching column types</li><li>Hierarchy resolver: root tables build before dependents</li><li>Async generator streaming data batches safely</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>AST parser: raw DB code → structured JSON</li><li>Graph sorting (DAGs) to auto-resolve relations</li><li>JS generators (function*) for massive files, no OOM</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Next.js</span><span class="chip">TypeScript</span><span class="chip">Tailwind</span><span class="chip">Local Storage</span></div>
+      <div class="diff">
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">Human hand-coded</span><span class="diff-score" style="color:#e0808a">9 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:90%;background:#e0808a"></div></div></div>
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">AI-assisted sprint</span><span class="diff-score" style="color:#6fdcc0">4 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:40%;background:#6fdcc0"></div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P54</span>
+      <div class="card-meta"><h3>TitanDB</h3><div class="tag">Slotted-page storage · Disk-backed B+Tree · WAL durability · ACID from scratch</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A from-scratch, disk-backed database storage engine implementing the same B+Tree, WAL, and page-buffer architecture as SQLite and Postgres.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>AST parser tokenizing SQL into logical JSON commands</li><li>Buffer Pool + slotted-page layout on 4KB binary arrays</li><li>Write-Ahead Log — durable histories before data pages</li><li>Disk-backed B+Tree mapping row keys to Page Numbers</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Low-level binary: Uint8Array/DataView byte-precise IO</li><li>ACID durability: crash recovery, LSN, atomic fsync</li><li>Slotted pages for variable-length rows, no fragmentation</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Next.js</span><span class="chip">TypeScript</span><span class="chip">Node fs/promises</span><span class="chip">IndexedDB / OPFS</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Caution</div>An error-free disk-backed B+Tree that splits and merges pages while maintaining LSNs is legendary tier. Build the WAL replay path before the B+Tree — durability first, indexing second.</div>
+      </div>
+      <div class="diff">
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">Human hand-coded</span><span class="diff-score" style="color:#e0808a">9.8 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:98%;background:#e0808a"></div></div></div>
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">AI-assisted sprint</span><span class="diff-score" style="color:#6fdcc0">6 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:60%;background:#6fdcc0"></div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P55</span>
+      <div class="card-meta"><h3>DevLog Catalyst</h3><div class="tag">Offline-first PWA · Markdown parser · Contribution grid · OPFS + Supabase sync</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">An offline-first developer journal that turns Markdown notes into a GitHub-style contribution graph of your own learning.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Modular sidebar: coding vs personal learning configs</li><li>Markdown processor scanning tasks, timestamps, hashtags</li><li>SVG contribution matrix mapping text histories</li><li>Dual-layer offline: browser cache + Supabase sync</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Offline-First: write to browser first, stay usable</li><li>Origin Private File System (OPFS) for fast local access</li><li>Text markers to live SVG relational graphs</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Next.js PWA</span><span class="chip">TypeScript</span><span class="chip">Tailwind</span><span class="chip">IndexedDB</span><span class="chip">OPFS</span><span class="chip">Supabase</span></div>
+      <div class="diff">
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">Human hand-coded</span><span class="diff-score" style="color:#e0808a">7.5 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:75%;background:#e0808a"></div></div></div>
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">AI-assisted sprint</span><span class="diff-score" style="color:#6fdcc0">3.5 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:35%;background:#6fdcc0"></div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P56</span>
+      <div class="card-meta"><h3>Resume-to-Portfolio Generator</h3><div class="tag">pdf.js extraction · AI JSON structuring · Multi-theme renderer · Supabase deploy</div></div>
+      <div class="card-side"><span class="wks">6 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A tool that turns a dropped-in resume PDF into a live, shareable developer portfolio site in minutes — the demo IS the product.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Client-side PDF parser (pdf.js Web Worker) with live preview</li><li>AI structuring engine: raw text → validated JSON schema</li><li>Six-section themeable component tree with inline editing</li><li>Supabase deploy engine publishing to public /p/[slug]</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Client-side WASM parsing — P52's pattern for PDFs</li><li>Structured JSON extraction — P1's RAG aimed at structure</li><li>Dynamic-route deployment — P4's architecture as a product</li></ul></div>
+      </div>
+      <div class="weeks">
+        <div class="col-label">Week by week</div>
+        <div class="wk"><div class="wk-no">WK 01</div><div class="wk-body"><strong>PDF Parser + Preview</strong><p>pdf.js. Drag-and-drop zone. Web Worker extraction. Preview panel. Multi-column edge cases. Test 5 resumes.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 02</div><div class="wk-body"><strong>AI Structuring Engine</strong><p>JSON schema. Extraction prompt. Gemini/Ollama call. Validate response. Retry stricter on parse failure.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 03</div><div class="wk-body"><strong>First Theme + Tree</strong><p>6 section components. Terminal Dark first. JSON → live preview. contentEditable inline editing.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 04</div><div class="wk-body"><strong>Themes + Switcher</strong><p>4 more themes. Live switcher. Auto-theme from hints. Section reorder with dnd-kit.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 05</div><div class="wk-body"><strong>Supabase + Deploy</strong><p>portfolios table + RLS. Slug availability checker. /api/deploy and /p/[slug]. Full flow end to end.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 06</div><div class="wk-body"><strong>Polish + Your Portfolio</strong><p>View counter. Update flow. Deploy to Vercel. Generate your own portfolio as the live demo.</p></div></div>
+      </div>
+      <div class="chips"><span class="chip">Next.js</span><span class="chip">TypeScript</span><span class="chip">pdf.js</span><span class="chip">Gemini / Ollama</span><span class="chip">Supabase</span><span class="chip">dnd-kit</span></div>
+      <div class="connects">Wires three roadmap skills into one shippable product: P52's client-side WASM parsing, P1's structured extraction, and P4's Supabase deploy — the demo it produces is your own portfolio.</div>
+      <div class="diff">
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">Human hand-coded</span><span class="diff-score" style="color:#e0808a">6.5 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:65%;background:#e0808a"></div></div></div>
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">AI-assisted sprint</span><span class="diff-score" style="color:#6fdcc0">2.5 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:25%;background:#6fdcc0"></div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P57</span>
+      <div class="card-meta"><h3>token · lens</h3><div class="tag">Live BPE training · Hand-written backprop · Attention viz · Zero dependencies</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A single self-contained HTML page that trains a real BPE tokenizer and a tiny GPT-style transformer from scratch in the browser at load, making tokenization, prediction, and attention visually inspectable.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Live BPE trainer (203 merges) with merge-replay slider</li><li>Hand-written 1-layer, 2-head transformer, manual backprop + Adam</li><li>Per-token surprise heatmap, top-5 distribution, temperature resampling</li><li>SVG attention arcs + generate mode re-analyzing its own output</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>BPE as frequency-driven subword merging</li><li>Full forward/backward pass in ~150 lines plain JS</li><li>Causal masking via the empty upper-triangle</li><li>Cross-entropy loss rendered per-token as a heatmap</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">HTML/CSS/JS</span><span class="chip">Hand-written backprop</span><span class="chip">BPE Tokenizer</span><span class="chip">Adam</span><span class="chip">SVG Attention</span></div>
+      <div class="connects">Same from-scratch transformer math as P8, compressed into a zero-dependency browser demo you can share as a single link.</div>
+      <div class="diff">
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">Human hand-coded</span><span class="diff-score" style="color:#e0808a">9 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:90%;background:#e0808a"></div></div></div>
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">AI-assisted sprint</span><span class="diff-score" style="color:#6fdcc0">4 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:40%;background:#6fdcc0"></div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P58</span>
+      <div class="card-meta"><h3>GlassHouse</h3><div class="tag">Native CLI hooks · Cross-agent schema · Hash-chained log · Local replay viewer</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A local-first observability layer that hooks natively into Claude Code, Codex CLI, and Gemini CLI, normalizes every tool-use event into one hash-chained schema, and replays a session's full audit trail offline.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Recorder Core: normalizes hook JSON, SHA-256 hash-chains events</li><li>Three shims translating each CLI's native hook payload</li><li>Git-diff fallback covering Codex's apply_patch blind spot</li><li>init auto-config, serve live viewer, verify integrity checker</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Native lifecycle hooks, no fragile stdout-parsing</li><li>Per-agent hook coverage gaps designed around</li><li>Hash-chained JSONL as tamper-evident local audit</li><li>One canonical schema decoupling viewer from quirks</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Node.js</span><span class="chip">Claude Code Hooks</span><span class="chip">Codex Hooks</span><span class="chip">Gemini Hooks</span><span class="chip">SHA-256</span><span class="chip">chokidar</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Caution</div>Codex's PreToolUse hook only fires for the shell tool — apply_patch, Read/Write, and MCP calls are invisible. Build the git-diff fallback before trusting Codex coverage.</div>
+        <div class="note tip"><div class="note-lbl">Tip</div>Claude Code writes its own JSONL transcript to ~/.claude/projects — use it as a free redundant integrity cross-check against your own hash chain.</div>
+      </div>
+      <div class="diff">
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">Human hand-coded</span><span class="diff-score" style="color:#e0808a">8 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:80%;background:#e0808a"></div></div></div>
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">AI-assisted sprint</span><span class="diff-score" style="color:#6fdcc0">3.5 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:35%;background:#6fdcc0"></div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P59</span>
+      <div class="card-meta"><h3>arveend_OS</h3><div class="tag">Local-first PWA · WIP-limited kanban · Firestore sync · Zero-build static app</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A personal command center — dashboard, project matrix, WIP-limited kanban, brain-dump inbox, icebox — built as a single static index.html with instant localStorage persistence and optional cloud sync.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Dashboard, matrix, kanban, inbox, icebox in one static file</li><li>Local-first: every change to localStorage, works from file://</li><li>Optional Google sign-in + Firestore per-user state</li><li>Export/import JSON snapshot as manual backup</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Local-first: browser is source of truth, cloud optional</li><li>WIP limits as a real kanban constraint</li><li>Static hosting with no build command</li><li>Firebase Authorized Domains once sign-in is enabled</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Vanilla JS</span><span class="chip">LocalStorage</span><span class="chip">Firebase Auth</span><span class="chip">Firestore</span><span class="chip">GitHub Pages</span></div>
+      <div class="connects">Same local-first-then-sync pattern as P55 DevLog Catalyst, applied to a personal ops dashboard instead of a dev journal.</div>
+      <div class="diff">
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">Human hand-coded</span><span class="diff-score" style="color:#e0808a">6 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:60%;background:#e0808a"></div></div></div>
+        <div class="diff-col"><div class="diff-top"><span class="diff-name">AI-assisted sprint</span><span class="diff-score" style="color:#6fdcc0">2 / 10</span></div><div class="diff-track"><div class="diff-fill" style="width:20%;background:#6fdcc0"></div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ PHASE 02 ═══════════ -->
+<div id="ph2" class="phase reveal">
+  <span class="phase-tag">Phase 02</span>
+  <span class="phase-name">Neural Mathematics</span>
+  <span class="phase-range">P8–P14</span>
+</div>
+<div class="grid">
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P8</span>
+      <div class="card-meta"><h3>Transformer from Scratch</h3><div class="tag">Multi-Head Attention · Raw tensors · BPE tokenizer · AdamW loop</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A GPT-style transformer built from raw tensor operations — tokenizer, attention, and training loop — with no framework shortcuts.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Custom BPE tokenizer — no tiktoken or sentencepiece</li><li>Multi-head causal attention: Q/K/V, mask, softmax</li><li>Feedforward: 2-layer MLP, GELU, Pre-LayerNorm</li><li>AdamW loop with gradient clipping and LR warmup</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Q, K, V matrices: why this enables attention</li><li>Causal masking: upper-triangular −∞</li><li>Residuals + LayerNorm for gradient flow</li><li>Cross-entropy loss, AdamW optimisation</li></ul></div>
+      </div>
+      <div class="weeks">
+        <div class="col-label">Week by week</div>
+        <div class="wk"><div class="wk-no">WK 25</div><div class="wk-body"><strong>Tokenizer + Embeddings</strong><p>BPE tokenizer. Embedding table. Sinusoidal positional encoding. Encode→decode tests. Shakespeare ~1MB.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 26</div><div class="wk-body"><strong>Attention + Block</strong><p>Raw torch.matmul — NO nn.MultiheadAttention. Multi-head reshape/permute. Full decoder block. Stack N.</p></div></div>
+        <div class="wk"><div class="wk-no">WK 27</div><div class="wk-body"><strong>Training + Eval</strong><p>AdamW: forward → loss → backward → clip → step. LR warmup. 2,000 steps. Loss curve, attention maps, perplexity.</p></div></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">PyTorch</span><span class="chip">Tensor Math</span><span class="chip">BPE Core</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Caution</div>Do NOT use nn.MultiheadAttention — it hides the math. Implement as raw torch.matmul operations.</div>
+        <div class="note tip"><div class="note-lbl">Tip</div>Train on Shakespeare. Small corpus (~1MB), trains on CPU in minutes, qualitatively evaluable output.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P9</span>
+      <div class="card-meta"><h3>Vector Indexing Engine</h3><div class="tag">IVF k-means · HNSW traversal · NumPy geometry · O(log N)</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A hand-built approximate nearest neighbour search engine implementing IVF and HNSW to understand what powers every vector database.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Brute-force linear scan baseline — exact NN ground truth</li><li>IVF: Lloyds k-means → Voronoi cells → inverted lists</li><li>HNSW: hierarchical graph, bidirectional edges</li><li>QPS vs recall benchmark across all three</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Curse of dimensionality — B-Tree collapse at 768+ dims</li><li>Voronoi decomposition as space partitioning</li><li>HNSW small-world → O(log N) average</li><li>nprobe and ef as accuracy knobs</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">NumPy</span><span class="chip">k-means</span><span class="chip">HNSW</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Caution</div>Do NOT use faiss, annoy, or hnswlib. All vector arithmetic must be raw NumPy — you are reimplementing these libraries.</div>
+        <div class="note tip"><div class="note-lbl">Tip</div>Start IVF with k=10 centroids on 1,000 vectors. Visualise Voronoi cells on 2D synthetic data first.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P10</span>
+      <div class="card-meta"><h3>Quantization &amp; Inference Engine</h3><div class="tag">FP32→INT4 · KV Cache · Memory profiling · C++ dequant kernel</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A model compression and inference toolkit that shrinks transformer weights to INT4 and speeds up generation with a KV cache.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Symmetric INT8: scale=max(|W|)/127</li><li>Asymmetric INT4 with group-wise calibration</li><li>Per-channel calibration pipeline</li><li>KV Cache: pre-allocated tensor buffer</li><li>C++ INT4 dequant kernel via ctypes</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>FP32 → INT8/INT4: scale, zero-point, rounding drift</li><li>Memory-bandwidth-bound inference</li><li>KV Cache: skip redundant prefix attention</li><li>INT4 bit packing: 2 weights per byte</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python / C++</span><span class="chip">KV Caching</span><span class="chip">Bit Math</span><span class="chip">ctypes</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P11</span>
+      <div class="card-meta"><h3>Sparse Mixture of Experts Transformer</h3><div class="tag">Top-K gating · Load Balancing Loss · Expert routing · Collapse prevention</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A sparse Mixture-of-Experts transformer that routes each token to only a few of many experts, with the loss term that keeps routing balanced.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>N=8 expert FFN modules as independent nn.Modules</li><li>Gating: linear→Softmax→top-K=2 per token</li><li>Auxiliary Load Balancing Loss with alpha</li><li>Ablation: alpha=0 → routing collapse in 50 steps</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Sparse activation: K of N experts, reduced FLOPs</li><li>Aux Loss: selection frequency × routing probability</li><li>Routing collapse without the loss term</li><li>Token capacity: dropping vs dynamic batching</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">PyTorch</span><span class="chip">Softmax Gating</span><span class="chip">Sparsity Math</span><span class="chip">Auxiliary Loss</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Caution</div>Routing collapse can happen within 50 steps without Aux Loss. Start alpha=0.01, increase to 0.1 if collapse observed.</div>
+        <div class="note tip"><div class="note-lbl">Tip</div>Ground yourself in N=4 experts, K=1 routing, 200 steps before scaling to N=8 and K=2.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P12</span>
+      <div class="card-meta"><h3>Speculative Decoding Engine</h3><div class="tag">Draft-verify loop · Residual acceptance · Throughput bench · Dual-model</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A dual-model inference engine that speeds up generation by having a small model draft tokens for a larger model to verify.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Draft: 1B model generates γ lookahead tokens</li><li>Verify: 7B target evaluates all γ in ONE pass</li><li>Acceptance: P=min(1, P_target/P_draft)</li><li>Throughput benchmark: γ=2,4,8 vs sequential</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Sequential decoding is memory-bandwidth-bound</li><li>Residual sampling maintains exact target distribution</li><li>Optimal γ: acceptance rate decays with lookahead</li><li>Output provably identical to target-only</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">Ollama Hooks</span><span class="chip">Batch Verification</span><span class="chip">Logprobs</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P13</span>
+      <div class="card-meta"><h3>Automated Evaluation Framework</h3><div class="tag">Pass@K · Docker sandbox · CoT grading · Regression dashboard</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">An automated grading harness that scores LLM outputs on coding and reasoning tasks using sandboxed execution and LLM-as-judge rubrics.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>30-task benchmark: 15 coding, 15 reasoning</li><li>Docker SDK sandboxed execution, no network</li><li>Pass@K estimator: 1 − C(n−c,K)/C(n,K)</li><li>LLM-as-judge: 4-criteria rubric, CoT, JSON</li><li>PostgreSQL regression: detect drops ≥10%</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Pass@K vs Pass@1 unbiased estimator</li><li>Docker SDK: lifecycle, mount, stdout capture</li><li>Structured CoT grading, judge consistency</li><li>Regression testing AI like versioned releases</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Docker SDK</span><span class="chip">Python</span><span class="chip">Pass@K</span><span class="chip">PostgreSQL</span></div>
+      <div class="connects">Run P13 on the BASE MODEL before P14 fine-tuning — P13 is the measurement instrument for the P14 experiment.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P14</span>
+      <div class="card-meta"><h3>Distillation &amp; Fine-Tuning Pipeline</h3><div class="tag">LoRA adapters · PEFT · Adapter merging · 6GB VRAM budget</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A LoRA fine-tuning pipeline that distills a larger teacher model's behaviour into a small model on a single consumer GPU.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>500+ synthetic instruction-response pairs from teacher</li><li>LoRA: r=8, alpha=16, &lt;1% trainable params</li><li>SFTTrainer: gradient accumulation, checkpointing</li><li>Adapter merge: W + B×A×(alpha/r)</li><li>P13 evaluation: Pass@K improvement over baseline</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>LoRA math: B×A approximates full update at 1% cost</li><li>Frozen base weights, only A and B update</li><li>Distillation: teacher data beats raw web data</li><li>VRAM budget: checkpointing + paged AdamW</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Hugging Face</span><span class="chip">PEFT</span><span class="chip">LoRA</span><span class="chip">SFTTrainer</span><span class="chip">bitsandbytes</span></div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ PHASE 03 ═══════════ -->
+<div id="ph3" class="phase reveal">
+  <span class="phase-tag">Phase 03</span>
+  <span class="phase-name">Hardware Systems</span>
+  <span class="phase-range">P15–P19</span>
+</div>
+<div class="grid">
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P15</span>
+      <div class="card-meta"><h3>GPU SRAM Flash-Attention Simulator</h3><div class="tag">HBM vs SRAM IO · Tiling · Online softmax · O(N²)→O(N)</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A from-scratch simulation of Flash-Attention's tiling and online-softmax tricks, proving why modern attention is IO-bound, not compute-bound.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Standard attention with IO instrumentation — verify O(N²)</li><li>Tiling: Q/K/V into SRAM-resident blocks</li><li>Online softmax: running m_i, l_i per K/V tile</li><li>4-panel IO dashboard: savings, sensitivity, lifecycle</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>SRAM ~192KB fast vs HBM ~80GB/s slow</li><li>Online log-sum-exp: stable softmax without full row</li><li>IO complexity: O(N²)→O(N) by restructuring</li><li>Modern transformers are IO-limited on GPU</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">NumPy Memory</span><span class="chip">Tiling Logic</span><span class="chip">IO Instrumentation</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Caution</div>Read Flash-Attention paper (Dao et al., 2022) Sections 3–4. Online softmax m_i/l_i update with rescaling is non-obvious.</div>
+        <div class="note tip"><div class="note-lbl">Tip</div>Build intuition for online softmax before touching the tiling loop. Correct output without seeing all scores at once is the breakthrough.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P16</span>
+      <div class="card-meta"><h3>Heterogeneous Memory Offloader</h3><div class="tag">PyTorch hooks · PCIe pre-fetching · CPU/VRAM sharding · VRAM Floor Cap</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A PyTorch hook-based system that offloads transformer layers between CPU and GPU to run models larger than available VRAM.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Layer partitioner by VRAM_BUDGET_GB</li><li>pre_forward_hook: layer.cuda() before pass</li><li>post_forward_hook: layer.cpu() after pass</li><li>Async pre-fetcher: background CUDA stream transfer</li><li>4-panel benchmark: VRAM, tokens/sec, PCIe, timeline</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>PCIe 4.0 x16 ≈ 16 GB/s governs feasibility</li><li>CUDA streams: non-blocking overlapping transfers</li><li>VRAM Floor Cap: two largest consecutive layers</li><li>Hooks on LEAF modules only</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">PyTorch Hooks</span><span class="chip">CUDA Streams</span><span class="chip">Async Threading</span></div>
+      <div class="connects">Connects KV Cache (P10) + quantization (P10) + Flash-Attention (P15) + offloading (P16) = complete hardware memory toolkit.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P17</span>
+      <div class="card-meta"><h3>Timeseries Chunk Compressor</h3><div class="tag">Zstd dictionaries · Lossless streams · Error-bounded lossy · Binary serialization</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A domain-specific compressor for time-series telemetry, combining Zstd dictionaries with error-bounded lossy pre-processing.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Zstd dictionary synthesizer for repeating JSON schemas</li><li>Error-bounded lossy: delta prediction, 0.01% error</li><li>Streaming binary serialization to network buffers</li><li>Benchmark: throughput vs window and dictionary size</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Why compression fails on small packets — cold start</li><li>Zstd dictionary training: ZDICT_trainFromBuffer</li><li>Storage vs CPU time at the compression frontier</li><li>Binary serialization: alignment, zero-copy streaming</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python / C++</span><span class="chip">libzstd</span><span class="chip">Dictionary Training</span><span class="chip">Lossy Processing</span></div>
+      <div class="connects">Capstone-tier telemetry compression: Zstd dictionaries compress KV-Cache transfers over PCIe from P16.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P18</span>
+      <div class="card-meta"><h3>Distributed HA Job Scheduler</h3><div class="tag">Optimistic locking · Redis ZSET · Lease ownership · Heartbeat trackers</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A distributed job scheduler with optimistic locking and lease-based ownership that guarantees each job runs exactly once across many workers.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Multi-node scheduler: PostgreSQL jobs + Redis ZSETs</li><li>CAS lock: UPDATE WHERE status=SCHEDULED</li><li>Heartbeat monitor: re-queue orphaned jobs</li><li>Dead-letter queue after retry_count=5</li><li>Load test: 1M jobs, 10 workers, zero duplicates</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>At-least-once delivery vs exactly-once execution</li><li>Optimistic CAS vs SELECT FOR UPDATE</li><li>Redis ZSET as time index, O(log N)</li><li>Idempotency: handlers safe to run twice</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Go / TypeScript</span><span class="chip">Redis ZSET</span><span class="chip">PostgreSQL</span><span class="chip">CAS Locks</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P19</span>
+      <div class="card-meta"><h3>Multi-GPU Tensor Parallelism Engine</h3><div class="tag">Column vs Row · NCCL collectives · All-Reduce · torch.distributed</div></div>
+      <div class="card-side"><span class="wks">6 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A hand-rolled tensor-parallel training engine implementing column/row weight sharding and manual ring-AllReduce across multiple GPUs.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Column parallelism: slice W vertically</li><li>Row parallelism: slice W horizontally, All-Reduce sum</li><li>Manual ring-All-Reduce via dist.send/recv</li><li>4-panel interconnect profiling</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Column: concatenate. Row: sum via All-Reduce</li><li>Ring-AllReduce: O(1) bandwidth per node</li><li>NCCL: same call order or deadlock</li><li>TP vs PP: intra vs inter-layer splits</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">PyTorch Distributed</span><span class="chip">NCCL</span><span class="chip">Matrix Sharding</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Caution</div>All processes in a comm group must call collectives in the same order. One process skipping an All-Reduce deadlocks the entire group.</div>
+        <div class="note tip"><div class="note-lbl">Tip</div>No multiple GPUs? Use CPU process groups with gloo backend. Ring-AllReduce math is identical — only bandwidth differs.</div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ PHASE 04 ═══════════ -->
+<div id="ph4" class="phase reveal">
+  <span class="phase-tag">Phase 04</span>
+  <span class="phase-name">MLOps &amp; Streaming</span>
+  <span class="phase-range">P20–P25</span>
+</div>
+<div class="grid">
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P20</span>
+      <div class="card-meta"><h3>CI/CD Pipeline for ML Models</h3><div class="tag">MLflow · Drift detection · A/B routing · Prometheus + Grafana</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A CI/CD pipeline purpose-built for ML models, with drift-triggered retraining, canary rollout, and full four-golden-signals observability.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>MLflow versioning with drift-triggered retraining</li><li>A/B routing proxy: 10% new / 90% baseline</li><li>Canary rollback on accuracy regression</li><li>Prometheus + Grafana: four golden signals</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Model lifecycle: experiment → staging → prod</li><li>Data drift: statistical tests on distributions</li><li>SLO design: 99.9% availability, p95 &lt;200ms</li><li>Canary: gradual shift with rollback gates</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">MLflow</span><span class="chip">Prometheus</span><span class="chip">Grafana</span><span class="chip">GitHub Actions</span><span class="chip">Docker</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P21</span>
+      <div class="card-meta"><h3>Feature Store &amp; Data Versioning</h3><div class="tag">Point-in-time correctness · Feast · DVC · Skew prevention</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A feature store with strict point-in-time correctness, preventing the training-serving skew that silently breaks production models.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Offline/online store split: lake vs serving cache</li><li>Point-in-time retrieval: no future leakage</li><li>DVC git-integrated dataset versioning</li><li>Feature validation before model processing</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Training-serving skew: mismatched definitions</li><li>Point-in-time joins as of event timestamp</li><li>Feature freshness: TTL staleness management</li><li>Dataset lineage: version → model tracking</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Feast</span><span class="chip">DVC</span><span class="chip">PostgreSQL</span><span class="chip">Redis</span><span class="chip">Python</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P22</span>
+      <div class="card-meta"><h3>FSDP Distributed Training Engine</h3><div class="tag">Fully Sharded Data Parallelism · Gradient sharding · DDP vs FSDP</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A distributed training engine implementing Fully Sharded Data Parallelism, benchmarked directly against standard DDP.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>FSDP on P8 transformer: shard params, grads, optimiser</li><li>Gradient accumulation for large effective batch</li><li>DDP vs FSDP memory profile at 2, 4, 8 workers</li><li>Mixed-precision: BF16/FP32</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>DDP: gradient sync. FSDP: full parameter sharding</li><li>Gradient accumulation before optimizer.step()</li><li>All-Gather in FSDP before forward pass</li><li>Reduce-Scatter after backward pass</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">PyTorch FSDP</span><span class="chip">torch.distributed</span><span class="chip">DeepSpeed</span><span class="chip">Mixed Precision</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P23</span>
+      <div class="card-meta"><h3>Kafka Real-Time Streaming Pipeline</h3><div class="tag">Partitioned delivery · Sliding-window aggregation · TimescaleDB · DLQ</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A real-time Kafka streaming pipeline that ingests high-frequency events and computes sliding-window aggregations into TimescaleDB.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Kafka producer: stock ticks + IoT sensor events</li><li>Kafka Streams: sliding-window aggregations</li><li>Dead-letter topic for malformed events</li><li>TimescaleDB: time-partitioned aggregations</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Kafka partitions: ordered within, not across</li><li>Consumer groups: horizontal scaling</li><li>Exactly-once: transactional producers</li><li>Sliding vs tumbling window</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Apache Kafka</span><span class="chip">Kafka Streams</span><span class="chip">TimescaleDB</span><span class="chip">Redis</span></div>
+      <div class="connects">The streaming infrastructure layer beneath an industrial copilot: MQTT sensors feed Kafka; Kafka feeds the AI pipeline.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P24</span>
+      <div class="card-meta"><h3>Zero-Trust API Security Layer</h3><div class="tag">OAuth 2.0 + PKCE · RS256 JWT · RBAC · Vault rotation · Audit logging</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A zero-trust API security layer combining OAuth 2.0/PKCE, RS256 JWTs, RBAC, and Vault-managed secret rotation.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Keycloak identity provider with OAuth 2.0 + PKCE</li><li>JWT RS256 asymmetric signing middleware</li><li>Fine-grained RBAC: resource + action pairs</li><li>HashiCorp Vault: rotation, PKI, credential leasing</li><li>Redis rate limiter + immutable audit log</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>OAuth 2.0 PKCE: S256 prevents code interception</li><li>RS256 vs HS256: asymmetric vs symmetric</li><li>Token expiry + refresh token rotation</li><li>Constant-time comparison prevents timing attacks</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Keycloak</span><span class="chip">HashiCorp Vault</span><span class="chip">OAuth 2.0</span><span class="chip">JWT RS256</span><span class="chip">Redis</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Priority</div>The Arveend Terminal handles financial data. An industrial copilot handles plant-floor data. Neither should exist without this layer.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P25</span>
+      <div class="card-meta"><h3>Manufacturing Digital Twin Engine</h3><div class="tag">OPC-UA / MQTT · State machines · Edge vision · TimescaleDB · Industry 4.0</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A manufacturing digital twin that mirrors real machine state from OPC-UA/MQTT sensors and runs edge vision inference for defect detection.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>OPC-UA / MQTT feeds driving a machine state machine</li><li>REST API for current + historical plant state</li><li>P10 INT4 quantized vision model, local, no cloud</li><li>P18 job scheduler for maintenance routing</li><li>TimescaleDB for time-series storage</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Digital twin: real-time software replica</li><li>OPC-UA: cross-vendor industrial protocol</li><li>State machine: states, transitions, guards</li><li>Edge inference via P10 INT4 quantization</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">OPC-UA</span><span class="chip">MQTT</span><span class="chip">TimescaleDB</span><span class="chip">Edge AI</span><span class="chip">Python</span></div>
+      <div class="notes">
+        <div class="note tip"><div class="note-lbl">Your Edge</div>You have MES domain knowledge most AI engineers lack. A deployed digital twin backed by local INT4 vision inference is a rare portfolio item in Malaysia.</div>
+        <div class="note tip"><div class="note-lbl">PETRONAS</div>Maps directly to PETRONAS Digital's Net Zero 2050 predictive maintenance roadmap. Lead with your MES background.</div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ PHASE 05 ═══════════ -->
+<div id="ph5" class="phase reveal">
+  <span class="phase-tag">Phase 05</span>
+  <span class="phase-name">Compilers &amp; Alignment</span>
+  <span class="phase-range">P26–P31</span>
+</div>
+<div class="grid">
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P26</span>
+      <div class="card-meta"><h3>MLIR / Triton Custom GPU Kernel</h3><div class="tag">Fused softmax · SRAM maps · Nsight profiling · FLOP utilisation</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A hand-written Triton/CUDA kernel for fused softmax, profiled against native PyTorch to show real GPU occupancy and bandwidth gains.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Triton kernel: fused softmax, all in SRAM</li><li>Naïve CUDA matmul — profile with Nsight Compute</li><li>Tiled matmul with shared memory</li><li>Compare vs PyTorch native vs P15 NumPy</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Kernel fusion: combine ops into one dispatch</li><li>Shared memory tiling: on-chip, avoid HBM</li><li>Occupancy: active warps bound throughput</li><li>Memory coalescing: adjacent bytes, one transaction</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Triton</span><span class="chip">MLIR</span><span class="chip">Nsight Profiler</span><span class="chip">CUDA</span></div>
+      <div class="notes">
+        <div class="note tip"><div class="note-lbl">No GPU?</div>Use Google Colab T4 (free). NVIDIA interviewers accept Colab-based kernel projects. Profile with Nsight Compute in Colab.</div>
+        <div class="note tip"><div class="note-lbl">NVIDIA Path</div>A Triton kernel with Nsight profiling output is the portfolio item for NVIDIA system software roles.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P27</span>
+      <div class="card-meta"><h3>Operator Fusion &amp; Graph Compiler</h3><div class="tag">torch.fx capture · Pattern-matching fusion · Triton dispatch</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A miniature graph compiler that captures a model's computation graph and automatically fuses adjacent operators into custom kernels.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>torch.fx graph capture of a full model</li><li>Pattern matcher: adjacent elementwise ops</li><li>Code generator: emit fused Triton kernels</li><li>Benchmark: fused vs unfused time and traffic</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>IR: why compilers use graphs not source</li><li>Operator fusion: N launches → 1</li><li>torch.compile: this project is a mini version</li><li>Pattern-match rewriting: core of every optimizer</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">torch.fx</span><span class="chip">torch.compile</span><span class="chip">Triton IR</span><span class="chip">Python</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P28</span>
+      <div class="card-meta"><h3>PPO Reinforcement Learning Engine</h3><div class="tag">Clipped surrogate · GAE · Policy entropy · Value function</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A from-scratch PPO reinforcement learning agent with GAE and clipped surrogate objectives, trained on classic control environments.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>PPO from scratch: policy + value networks</li><li>GAE for reward trajectory profiles</li><li>Clipped surrogate objective</li><li>CartPole → LunarLander. Reward, entropy, KL charts</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Policy gradient: why optimising policy works</li><li>Value function for advantage computation</li><li>Clipping prevents destructive updates</li><li>Entropy bonus encourages exploration</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">PyTorch</span><span class="chip">GAE Math</span><span class="chip">Gymnasium</span><span class="chip">Tensor Physics</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P29</span>
+      <div class="card-meta"><h3>RLHF Alignment Pipeline</h3><div class="tag">Preference reward models · PPO transformer tuning · KL penalties</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A full RLHF pipeline — preference data, reward model, PPO fine-tuning — that aligns a model's outputs to human preference.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>1,000 preference pairs from Constitutional AI critique</li><li>Reward model via Bradley-Terry loss</li><li>PPO fine-tuning with reward model signal</li><li>P13 eval: PPO vs SFT baseline</li><li>Publish dataset to Hugging Face</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Constitutional AI: model critiques its own output</li><li>Bradley-Terry loss on chosen/rejected pairs</li><li>KL penalty prevents policy divergence</li><li>RLHF loop: SFT → reward → PPO → eval</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">PyTorch</span><span class="chip">RLHF</span><span class="chip">PPO Loop</span><span class="chip">Model Alignment</span></div>
+      <div class="connects">Publishing the preference dataset + training code to Hugging Face is a direct portfolio signal visible to Anthropic and OpenAI recruiters.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P30</span>
+      <div class="card-meta"><h3>Hybrid Retrieval Engine</h3><div class="tag">pgvector cosine · BM25 sparse · Reciprocal Rank Fusion · Recall@10</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A hybrid retrieval engine that fuses dense vector search with BM25 keyword search via Reciprocal Rank Fusion.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Dense retrieval: P1 pgvector cosine</li><li>Sparse BM25 via Elasticsearch or Tantivy</li><li>Reciprocal Rank Fusion merging score lists</li><li>Benchmark: hybrid vs dense-only Recall@10</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>BM25: term frequency saturation, length norm</li><li>Why dense fails on exact keywords</li><li>RRF: 1/(k + rank_i), no score normalization</li><li>Recall@10 metric</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Elasticsearch</span><span class="chip">pgvector</span><span class="chip">RRF Math</span><span class="chip">Recall Benchmarks</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P31</span>
+      <div class="card-meta"><h3>Knowledge Graph + GraphRAG</h3><div class="tag">spaCy NER · Neo4j maps · Multi-hop reasoning context</div></div>
+      <div class="card-side"><span class="wks">1 wk</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A GraphRAG system that extracts entity relationships into a graph database to answer multi-hop questions flat chunk retrieval can't.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>spaCy Subject–Predicate–Object triple extraction</li><li>Neo4j graph store with Cypher queries</li><li>Multi-hop GraphRAG traversal before context</li><li>Benchmark: GraphRAG vs flat chunk RAG</li></ul></div>
+        <div class="col"><div class="col-label">Core concepts</div><ul><li>Why flat RAG fails on multi-hop reasoning</li><li>Cypher: MATCH (a)-[:RELATED_TO]->(b)</li><li>Entity disambiguation across documents</li><li>GraphRAG hallucination reduction</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Neo4j</span><span class="chip">spaCy NER</span><span class="chip">Cypher</span><span class="chip">GraphRAG</span></div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ PHASE 06 ═══════════ -->
+<div id="ph6" class="phase reveal">
+  <span class="phase-tag">Phase 06</span>
+  <span class="phase-name">CS Fundamentals — Build to Understand</span>
+  <span class="phase-range">P32–P38</span>
+</div>
+<div class="grid">
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P32</span>
+      <div class="card-meta"><h3>Hash Map from Scratch</h3><div class="tag">Separate chaining · Open addressing · Dynamic resizing · Amortised O(1)</div></div>
+      <div class="card-side"><span class="wks">1 wk</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A hash map built from raw arrays, implementing both chaining and open addressing to see exactly where Python's amortised O(1) dict comes from.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Separate chaining (linked lists per bucket)</li><li>Linear probing variant, same API</li><li>Dynamic resizing at 0.75 load factor</li><li>Benchmark vs Python dict at 10K/100K/1M</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Open addressing vs separate chaining tradeoffs</li><li>Load factor and rehashing</li><li>Amortised O(1) vs guaranteed O(1)</li><li>Why Python dicts are O(n) worst case</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python or Go</span><span class="chip">Hash functions</span><span class="chip">Amortised analysis</span></div>
+      <div class="connects">Explains Redis internals (P2), pgvector index buckets (P9), and Python performance limits.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P33</span>
+      <div class="card-meta"><h3>Memory Allocator (malloc)</h3><div class="tag">Free list · Coalescing · Buddy system · Fragmentation</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A malloc-style memory allocator with a free list, splitting, and coalescing, built to feel fragmentation, not just read about it.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>mmap() / sbrk() for raw memory pages</li><li>Free list allocator with block headers</li><li>First-fit allocation, block splitting</li><li>Coalescing adjacent free blocks on free()</li><li>Benchmark vs glibc malloc, 1M ops</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Heap fragmentation with free space</li><li>First-fit vs best-fit vs buddy system</li><li>Internal vs external fragmentation</li><li>Why Rust's ownership model exists</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">C / Python</span><span class="chip">mmap</span><span class="chip">Free list</span><span class="chip">Fragmentation</span></div>
+      <div class="connects">Makes P10 quantization memory layout, P16 VRAM offloading, and P15 SRAM tiling conceptually grounded.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P34</span>
+      <div class="card-meta"><h3>Garbage Collector</h3><div class="tag">Tri-colour invariant · Generational GC · Stop-the-world · Reference counting</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A mark-and-sweep garbage collector with generational collection, built on a tiny VM to understand what Python/Go/Java hide from you.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Tiny VM with managed heap arena</li><li>Mark phase: recursively mark reachable</li><li>Sweep phase: free unmarked, reset</li><li>Generational: young + old, young more often</li><li>Instrument: pause time, live object count</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Tri-colour invariant and write barriers</li><li>Generational hypothesis: objects die young</li><li>Stop-the-world vs concurrent: Go vs Java</li><li>Reference counting vs tracing</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">Mark-and-sweep</span><span class="chip">Generational</span></div>
+      <div class="connects">Explains Python GIL, Go GC tuning, and why Rust avoids GC entirely.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P35</span>
+      <div class="card-meta"><h3>B-Tree Index from Scratch</h3><div class="tag">Node splitting · Disk-based structures · Clustered vs non-clustered</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A disk-persisted B-Tree index with node splitting, built to understand why every real database uses it instead of a binary tree.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>B-Tree node: ordered keys with child pointers</li><li>Search: recurse + binary search per node</li><li>Insertion with node splitting to root</li><li>Persistence: 4KB page per node on disk</li><li>Verify: 1M integers, compare vs linear scan</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Why B-Tree: fat nodes match disk blocks</li><li>Disk reads, not comparisons, determine perf</li><li>Clustered vs non-clustered index</li><li>Why pgvector needs HNSW not B-Tree</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">Disk-based</span><span class="chip">Node splitting</span><span class="chip">B-Tree</span></div>
+      <div class="connects">Directly motivates why P9 Vector Indexing uses HNSW instead of B-Tree — now from first principles.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P36</span>
+      <div class="card-meta"><h3>Write-Ahead Log &amp; Recovery</h3><div class="tag">ARIES protocol · Redo/undo · LSN · Checkpointing · ACID</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">An ARIES-style write-ahead log and crash-recovery engine — the same redo/undo protocol underneath every production database.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>WAL: append-only binary, LSN, before/after image</li><li>Buffer pool with dirty tracking</li><li>Transaction begin/commit/abort bracketing</li><li>Crash recovery: redo committed, undo uncommitted</li><li>Checkpointing: flush, record, truncate</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>ARIES: standard WAL recovery protocol</li><li>Write-ahead rule: log before data page</li><li>Redo vs undo recovery phases</li><li>LSN: monotonic counter ordering entries</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">WAL</span><span class="chip">ARIES</span><span class="chip">ACID</span></div>
+      <div class="connects">Makes PostgreSQL WAL, Redis AOF persistence, and P2 atomic write path completely transparent.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P37</span>
+      <div class="card-meta"><h3>Sorting Algorithm Profiler</h3><div class="tag">Cache locality · Branch prediction · Timsort insight · Constant factors</div></div>
+      <div class="card-side"><span class="wks">1 wk</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A benchmark harness for nine sorting algorithms that reveals why constant factors and cache locality beat Big-O in practice.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>All 9: bubble, selection, insertion, merge, quick (3 pivots), heap, radix, counting</li><li>Benchmark: random, sorted, reverse, nearly-sorted</li><li>Plot: the insertion-sort surprise on nearly-sorted</li><li>Timsort insight: insertion under 64, merge above</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Why quicksort beats merge: cache locality</li><li>Why insertion beats quick on small arrays</li><li>Radix and counting: O(n) non-comparison</li><li>Branch prediction misleads benchmarks</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">Profiling</span><span class="chip">Cache locality</span><span class="chip">Timsort</span></div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P38</span>
+      <div class="card-meta"><h3>Query Optimiser (Rule-Based)</h3><div class="tag">Relational algebra · Predicate pushdown · Join ordering · Cardinality</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A rule-based SQL query optimizer implementing predicate pushdown and join reordering, to make EXPLAIN ANALYZE finally make sense.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>SQL parser: SELECT, FROM, WHERE, JOIN, ORDER BY</li><li>Relational algebra tree of operators</li><li>Predicate pushdown below joins</li><li>Join reordering: permutations of 4 tables</li><li>Cardinality estimation from statistics</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Relational algebra as SQL foundation</li><li>Predicate pushdown before joins</li><li>Join ordering dramatically affects perf</li><li>Why ANALYZE matters — cardinality drives plans</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">Relational algebra</span><span class="chip">AST rewriting</span><span class="chip">Cardinality</span></div>
+      <div class="connects">Makes EXPLAIN ANALYZE output in PostgreSQL fully readable and your pgvector query tuning intuitive.</div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ PHASE 07 ═══════════ -->
+<div id="ph7" class="phase reveal">
+  <span class="phase-tag">Phase 07</span>
+  <span class="phase-name">Systems Craft — Networking, OS, Compilers, Crypto</span>
+  <span class="phase-range">P39–P45</span>
+</div>
+<div class="grid">
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P39</span>
+      <div class="card-meta"><h3>HTTP/1.1 Server from Raw Sockets</h3><div class="tag">TCP socket API · HTTP parsing · Persistent connections · Chunked encoding</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">An HTTP/1.1 server built directly on raw TCP sockets, hand-parsing requests and implementing keep-alive and chunked encoding.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Raw TCP socket, parse HTTP bytes manually</li><li>HTTP response serialisation as raw bytes</li><li>Routing: path → handler function map</li><li>Persistent connections on keep-alive</li><li>Benchmark vs Express using wrk</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>TCP lifecycle: SYN, SYN-ACK, ACK, FIN</li><li>HTTP/1.1 keep-alive and web performance</li><li>Chunked transfer encoding</li><li>Blocking vs non-blocking I/O</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python or Go</span><span class="chip">TCP sockets</span><span class="chip">HTTP/1.1</span><span class="chip">Socket API</span></div>
+      <div class="connects">Makes your P4 Socket.io WebSocket server, P5 agent streaming, and every Nginx config completely transparent.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P40</span>
+      <div class="card-meta"><h3>Load Balancer from Scratch</h3><div class="tag">Round-robin · Least-connections · Health checks · Connection draining · L7</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">An L7 reverse proxy load balancer with round-robin and least-connections routing, health checks, and connection draining.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>L7 HTTP reverse proxy in Go</li><li>Round-robin: rotate, skip unhealthy</li><li>Least-connections: route to lowest active</li><li>Health checks: GET /health every 5s</li><li>Connection draining before removal</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>L4 vs L7 load balancing</li><li>Sticky sessions and stateless design</li><li>Active vs passive health checking</li><li>Removing backends without dropping requests</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Go</span><span class="chip">Reverse proxy</span><span class="chip">Health checks</span><span class="chip">L7 routing</span></div>
+      <div class="connects">Makes P18 job scheduler routing and every Kubernetes Ingress config concrete.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P41</span>
+      <div class="card-meta"><h3>Unix Shell from Scratch</h3><div class="tag">fork/exec · Pipes · FD redirection · Signal handling · Job control</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A Unix shell built with fork/exec, pipes, and signal handling — the systems programming behind every terminal you use.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>REPL: read, tokenise, parse, execute</li><li>fork() → child execvp() with parsed args</li><li>Piping via pipe() + dup2</li><li>I/O redirection: cmd &gt; file, cmd &lt; file</li><li>Built-ins: cd, exit, export</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>fork() and exec() at OS level</li><li>Pipes: FD pair connecting stdout to stdin</li><li>Signals: SIGINT, SIGTSTP, SIGHUP</li><li>Job control: foreground/background, &amp;</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">C or Python</span><span class="chip">fork/exec</span><span class="chip">Pipes</span><span class="chip">File descriptors</span></div>
+      <div class="connects">Makes Docker container isolation, Python subprocess, and P16 CUDA stream threading intuitive.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P42</span>
+      <div class="card-meta"><h3>Lisp Interpreter</h3><div class="tag">Lexer · Parser · AST · Environment chains · Closures · Tail recursion</div></div>
+      <div class="card-side"><span class="wks">2 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A Lisp interpreter with lexer, parser, closures, and tail-call optimization, built to make lexical scoping click.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Tokeniser: atoms and delimiters</li><li>Recursive parser: tokens → nested AST</li><li>Environment class with parent pointer</li><li>Eval: symbol, literal, if, define, lambda, call</li><li>Stdlib + tail call optimisation</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Lexing → parsing → eval</li><li>Environment chains: scoping, closures</li><li>Eval/Apply mutual recursion</li><li>Tail call optimisation, no stack overflow</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">AST</span><span class="chip">Closures</span><span class="chip">Tail recursion</span></div>
+      <div class="connects">Makes Python scope rules, JavaScript closures, and your P8 BPE tokenizer design feel obvious.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P43</span>
+      <div class="card-meta"><h3>Bytecode Virtual Machine</h3><div class="tag">Stack VM · Instruction set · Call frames · Upvalues · JIT motivation</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A stack-based bytecode virtual machine with call frames and closures, compiling down from the P42 Lisp interpreter.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Instruction set: PUSH, POP, ADD, JUMP, CALL, RETURN</li><li>Compiler: P42 Lisp AST → bytecode</li><li>VM loop: fetch → decode → execute → advance</li><li>Call frames: local slots + return address</li><li>Closures + disassembler</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Stack-based vs register-based VMs</li><li>Call frames at the VM level</li><li>Upvalues: closures capture outer scope</li><li>Why JIT exists: interpretation overhead</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">Bytecode</span><span class="chip">Stack VM</span><span class="chip">Call frames</span></div>
+      <div class="connects">Makes CPython performance, JVM JIT, and your P8 transformer forward-pass loop structurally familiar.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P44</span>
+      <div class="card-meta"><h3>SHA-256 &amp; HMAC from Scratch</h3><div class="tag">Merkle-Damgård · One-way hash · Length extension attack · JWT</div></div>
+      <div class="card-side"><span class="wks">1 wk</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A from-spec implementation of SHA-256 and HMAC, ending in a minimal working JWT signer/verifier.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>SHA-256 from FIPS 180-4 spec</li><li>NIST test vector verification</li><li>HMAC-SHA256: padding, inner/outer hash</li><li>Minimal JWT: header.payload.signature</li><li>Constant-time comparison</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Merkle-Damgård: 512-bit block processing</li><li>Why hashes are one-way</li><li>Length extension attack</li><li>HMAC construction prevents it</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">SHA-256</span><span class="chip">HMAC</span><span class="chip">JWT</span></div>
+      <div class="connects">Makes P24 JWT RS256 security layer and every HTTPS handshake concrete and transparent.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P45</span>
+      <div class="card-meta"><h3>Game of Life &amp; Cellular Automaton</h3><div class="tag">Emergence · Hashlife quadtree · Sparse representation · Canvas rendering</div></div>
+      <div class="card-side"><span class="wks">3 days</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A cellular automaton simulator that scales from a naive 2D array to a memoised Hashlife quadtree for near-infinite universes.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Naïve 2D array, 4-rule update, canvas render</li><li>Profile bottleneck at 10K/1M/10M cells</li><li>Hashlife: memoised quadtree</li><li>Famous patterns: Glider Gun, Langton's Ant</li><li>React/Canvas: start/pause/step/zoom/pan</li></ul></div>
+        <div class="col"><div class="col-label">What you'll learn</div><ul><li>Emergence from 4 simple rules</li><li>Sparse representation for large universes</li><li>Spatial hashing for 10^18 cells</li><li>Hashlife: memoised, near-infinite</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">React/Canvas</span><span class="chip">Quadtree</span><span class="chip">Spatial hashing</span><span class="chip">Hashlife</span></div>
+      <div class="connects">Pure joy. Also teaches the sparse optimisation thinking used in P9 IVF index and P15 Flash-Attention tiling.</div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ PHASE 08 ═══════════ -->
+<div id="ph8" class="phase reveal">
+  <span class="phase-tag">Phase 08</span>
+  <span class="phase-name">Career Target Projects — Malaysia &amp; FAANG</span>
+  <span class="phase-range">P46–P51</span>
+</div>
+<div class="grid">
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P46</span>
+      <div class="card-meta"><h3>SEA-Scale Ride/Delivery Matching Engine</h3><div class="tag">Geohashing · Redis geospatial · Surge pricing · WebSocket · 10M scale</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A Grab-style real-time ride/delivery matching engine using Redis geospatial queries and surge pricing under simulated 10M-user load.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Location service: GPS every 3s via WebSocket → GEOADD</li><li>Matching: GEORADIUS → score → dispatch</li><li>Surge pricing: 2x supply in 5-min window</li><li>Load test: 10K requests × 50K drivers, p95</li></ul></div>
+        <div class="col"><div class="col-label">Why this unlocks Grab</div><ul><li>Verbatim Grab system design question</li><li>Billions of transactions, 8 regulatory environments</li><li>Redis geospatial + WebSocket = their architecture</li><li>Working implementation beats theoretical answer</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Go or Node.js</span><span class="chip">Redis GEORADIUS</span><span class="chip">WebSocket</span><span class="chip">Geohashing</span></div>
+      <div class="connects">Target: Grab Malaysia (RM 18k–28k/mo). 5-round interview: HR → OA → live coding → system design → culture.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P47</span>
+      <div class="card-meta"><h3>E-Commerce Flash Sale Order Pipeline</h3><div class="tag">Flash-sale inventory · Kafka events · Circuit breaker · State machine</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A Shopee-style flash-sale order pipeline with atomic inventory locks, a full order state machine, and Kafka-driven fulfillment.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Flash-sale gate: P3 Lua atomic, 50K concurrent</li><li>Order state machine: RESERVED → DELIVERED</li><li>Circuit breaker on payment gateway</li><li>Kafka: state transitions as events</li></ul></div>
+        <div class="col"><div class="col-label">Why this unlocks Shopee</div><ul><li>11.11 flash sale is their defining challenge</li><li>Verbatim Shopee system design question</li><li>Sea coding rounds strict: 150+ LeetCode</li><li>Domain-relevant design, generic won't do</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">TypeScript</span><span class="chip">Kafka</span><span class="chip">Redis Lua</span><span class="chip">BullMQ</span><span class="chip">PostgreSQL</span></div>
+      <div class="connects">Target: Shopee / Sea Group Malaysia (RM 15k–25k/mo). Extends P3 directly.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P48</span>
+      <div class="card-meta"><h3>Financial Fraud Detection &amp; AML</h3><div class="tag">Real-time scoring · Rule engine · BNM compliance · Explainability</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A real-time financial fraud detection engine with an explainable, hot-reloadable rule scoring system built for BNM compliance.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Transaction scoring: 0–100 in under 50ms</li><li>Rule engine in PostgreSQL, hot-reloadable</li><li>Explainability: reason list per flag (BNM)</li><li>Case management → analyst → retraining</li></ul></div>
+        <div class="col"><div class="col-label">Why this unlocks Maybank</div><ul><li>Black-box models prohibited by BNM</li><li>Explainability is a compliance requirement</li><li>Verbatim Maybank interview question</li><li>CIMB TechVentures: RM 10k–18k/mo</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">PostgreSQL rule engine</span><span class="chip">Real-time scoring</span><span class="chip">BNM compliance</span></div>
+      <div class="connects">Target: Maybank / CIMB TechVentures (RM 10k–18k/mo). Your MES background explains the domain quickly.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P49</span>
+      <div class="card-meta"><h3>Industrial IoT Predictive Maintenance</h3><div class="tag">MQTT · TimescaleDB · Z-score anomaly · LSTM · OPC-UA bridge</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">An industrial IoT predictive maintenance platform combining MQTT sensor ingestion, anomaly detection, and edge-deployed failure prediction.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>100 sensors → MQTT → TimescaleDB</li><li>Rolling Z-score anomaly: 3σ from baseline</li><li>LSTM / isolation forest failure prediction</li><li>OPC-UA bridge, edge inference on Pi</li></ul></div>
+        <div class="col"><div class="col-label">Why this unlocks PETRONAS</div><ul><li>Net Zero 2050 predictive maintenance</li><li>Offshore: edge inference without cloud</li><li>Your MES background = deep understanding</li><li>PETRONAS Digital senior AI: RM 16k–24k/mo</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Python</span><span class="chip">MQTT</span><span class="chip">TimescaleDB</span><span class="chip">OPC-UA</span><span class="chip">Edge AI</span></div>
+      <div class="connects">Target: PETRONAS Digital (RM 16k–24k/mo). Your unique edge — MES + edge AI + OPC-UA in one project.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P50</span>
+      <div class="card-meta"><h3>Mechanistic Interpretability Explorer</h3><div class="tag">Activation patching · Attention analysis · Sparse autoencoders · TransformerLens</div></div>
+      <div class="card-side"><span class="wks">3 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A mechanistic interpretability toolkit that reproduces a known transformer circuit and probes model internals with sparse autoencoders.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Reproduce the IOI circuit via TransformerLens</li><li>Activation patching: clean vs corrupted passes</li><li>Sparse autoencoder for interpretable features</li><li>Published technical report / blog post</li></ul></div>
+        <div class="col"><div class="col-label">Why this unlocks Anthropic</div><ul><li>Anthropic hires for AI safety understanding</li><li>Interpretability rarely in portfolios</li><li>"What draws you to AI safety?" answered</li><li>Publishing puts your name before researchers</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">TransformerLens</span><span class="chip">Activation patching</span><span class="chip">Sparse autoencoders</span><span class="chip">PyTorch</span></div>
+      <div class="connects">Target: Anthropic (global remote). Combined with P29 RLHF + published HF dataset = direct recruiter signal.</div>
+    </div></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-head" onclick="tog(this)">
+      <span class="pid">P51</span>
+      <div class="card-meta"><h3>CUDA Kernel Engineering Portfolio</h3><div class="tag">Naïve → tiled GEMM → fused softmax · Nsight profiling · Memory coalescing</div></div>
+      <div class="card-side"><span class="wks">4 wks</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    </div>
+    <div class="card-body"><div class="card-body-inner">
+      <p class="intro">A hand-written CUDA kernel portfolio — naive to tiled to fused — profiled with Nsight Compute to prove real hardware understanding.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What you're building</div><ul><li>Kernel 1: naïve matmul, Nsight profile</li><li>Kernel 2: tiled matmul with shared memory</li><li>Kernel 3: fused softmax in CUDA vs PyTorch</li><li>Kernel 4: float4 vectorised, coalescing</li><li>Nsight output: occupancy, throughput vs peak</li></ul></div>
+        <div class="col"><div class="col-label">Why this unlocks NVIDIA</div><ul><li>NVIDIA tests CUDA, memory hierarchy, kernels</li><li>P15 Flash-Attention is NumPy — CUDA is the gap</li><li>The Nsight profiling output IS the interview</li><li>NVIDIA Penang R&amp;D hiring hardware engineers</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">CUDA</span><span class="chip">Shared memory</span><span class="chip">Nsight Compute</span><span class="chip">float4</span><span class="chip">Memory coalescing</span></div>
+      <div class="connects">Target: NVIDIA Malaysia Penang / global. Use Google Colab T4 (free) — NVIDIA accepts Colab-based projects.</div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ HACKATHONS ═══════════ -->
+<div id="hack" class="phase reveal">
+  <span class="phase-tag">Live</span>
+  <span class="phase-name">Hackathons</span>
+  <span class="phase-range">4 events</span>
+</div>
+<p class="hack-intro reveal">Competitive builds shipped alongside the roadmap — real deadlines, real submissions, real judges. Where the learning meets the arena.</p>
+<div class="hack-grid">
+
+  <!-- AGENTS FOR HUMANS -->
+  <div class="hack reveal" id="hk1">
+    <div class="hack-head" onclick="tog(this)">
+      <div class="hack-icon">🤖</div>
+      <div class="hack-headmeta">
+        <div class="hack-top">
+          <span class="hack-name">Agents for Humans Hackathon</span>
+          <span class="hack-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>Online</span>
+        </div>
+        <div class="hack-foot">
+          <span class="status progress"><span class="sdot"></span>In progress</span>
+        </div>
+      </div>
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="hack-body"><div class="hack-body-inner">
+      <p class="intro">AWS · Strands Agents SDK. Building an agent that handles routine, repetitive tasks autonomously and only surfaces when there's a genuine decision to make — not another chatbot wrapper.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">Theme &amp; tracks</div><ul><li>Everyday Agents — personal productivity, automation</li><li>Professional Agents — workplace and domain-specific workflows</li><li>Good Neighbor Agents — community and public-good use cases</li><li>Six-week build window, $40,000 total prize pool</li></ul></div>
+        <div class="col"><div class="col-label">Submission requirements</div><ul><li>Public repo under MIT or Apache license</li><li>README + architecture diagram</li><li>5-minute demo video</li><li>AWS Builder ID; AgentCore deployment is optional but scores higher</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">AWS</span><span class="chip">Strands Agents SDK</span><span class="chip">AgentCore</span><span class="chip">Python</span></div>
+    </div></div>
+  </div>
+
+  <!-- FACTORY GUARDIAN -->
+  <div class="hack reveal" id="hk2">
+    <div class="hack-head" onclick="tog(this)">
+      <div class="hack-icon">🎬</div>
+      <div class="hack-headmeta">
+        <div class="hack-top">
+          <span class="hack-name">Agentic Cinema: The Blockbuster Hackathon</span>
+          <span class="hack-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>Online</span>
+        </div>
+        <div class="hack-foot">
+          <span class="status submitted"><span class="sdot"></span>Submitted</span>
+          <span class="proj-name">Project: <span>Factory Guardian</span></span>
+        </div>
+      </div>
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="hack-body"><div class="hack-body-inner">
+      <p class="intro">An AI incident investigator for a factory production line, built on the Grafana Labs track. The alert fires on API latency — a symptom — but the real root cause sits four layers upstream at a degrading motor. Closing that gap is the entire point of the demo.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What it does</div><ul><li>Reads the Grafana alert, then queries metrics, logs, and traces to investigate</li><li>Walks the stack in one combined query to find which signal moved first</li><li>Names the root cause with confidence and cited evidence — never a guess</li><li>Proposes a fix, waits for human approval, then re-queries to prove recovery</li></ul></div>
+        <div class="col"><div class="col-label">Architecture</div><ul><li>Google ADK + Gemini 2.5, orchestrated via an in-process InMemoryRunner</li><li>mcp-grafana run locally over stdio — the hosted MCP gateway rejected both token types</li><li>simulator.py: one hidden variable drives all seven derived signals, so the causal chain is real, not scripted</li><li>OpenTelemetry → Grafana Cloud: Mimir (metrics), Loki (logs), Tempo (traces)</li></ul></div>
+      </div>
+      <div class="metrics">
+        <div class="col-label">Recovery, verified not claimed</div>
+        <div class="metric-head"><span>Metric</span><span>Peak</span><span>After</span></div>
+        <div class="metric-row"><span class="m-name">API latency</span><span class="m-before">6,834 ms</span><span class="m-after">199 ms</span></div>
+        <div class="metric-row"><span class="m-name">API error rate</span><span class="m-before">14.8%</span><span class="m-after">0.20%</span></div>
+        <div class="metric-row"><span class="m-name">DB pool in use</span><span class="m-before">100%</span><span class="m-after">39.1%</span></div>
+        <div class="metric-row"><span class="m-name">Motor temperature</span><span class="m-before">97.8°C</span><span class="m-after">66.7°C</span></div>
+        <div class="metric-row"><span class="m-name">Throughput</span><span class="m-before">575/hr</span><span class="m-after">966/hr</span></div>
+      </div>
+      <div class="chips"><span class="chip">Google ADK</span><span class="chip">Gemini 2.5</span><span class="chip">Grafana Cloud</span><span class="chip">Mimir</span><span class="chip">Loki</span><span class="chip">Tempo</span><span class="chip">OpenTelemetry</span><span class="chip">MCP</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Structural, not prompted</div>The approval gate lives inside ADK's <code>FunctionTool.run_async</code>, before the function is ever invoked. Calling <code>remediate</code> without confirmation during a live incident returned an error and left the simulator's state unchanged — verified both by design and empirically.</div>
+        <div class="note tip"><div class="note-lbl">Engineered around limits</div>Built in 3 days across 9 stages on the Gemini free tier, no billing enabled — worked around the 250k tokens/min cap with a 9-tool filter, result truncation, and call pacing.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- GLASSHOUSE -->
+  <div class="hack reveal" id="hk3">
+    <div class="hack-head" onclick="tog(this)">
+      <div class="hack-icon">🔒</div>
+      <div class="hack-headmeta">
+        <div class="hack-top">
+          <span class="hack-name">OpenAI Build Week</span>
+          <span class="hack-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>Online</span>
+        </div>
+        <div class="hack-foot">
+          <span class="status submitted"><span class="sdot"></span>Submitted</span>
+          <span class="proj-name">Project: <span>Glasshouse</span></span>
+        </div>
+      </div>
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="hack-body"><div class="hack-body-inner">
+      <p class="intro">A flight recorder for coding AI agents — captures what an agent actually did during a session, never its hidden reasoning, and links every event into a tamper-evident cryptographic chain you can replay and verify offline.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">What it does</div><ul><li>Records observable actions only: file reads/writes, commands, output, test runs</li><li>Every event hash-chains to its predecessor — <code>SHA256(prev_hash + timestamp + payload)</code></li><li>Editing, deleting, or reordering any event breaks the chain from that point forward</li><li>Replays as one self-contained ~29KB HTML file — no backend, no network, opens from file://</li></ul></div>
+        <div class="col"><div class="col-label">Agent support</div><ul><li>Codex CLI — working, via a wrapper around <code>codex exec --json</code></li><li>Claude Code — working, via native settings.json hooks (PreToolUse / PostToolUse / Stop)</li><li>Gemini CLI, OpenCode, custom agents — planned, via an AgentAdapter contract</li><li>Format is agent-neutral: any recorder emitting a valid chain replays in the same viewer</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">SHA-256 hash chain</span><span class="chip">Codex CLI</span><span class="chip">Claude Code Hooks</span><span class="chip">Next.js</span><span class="chip">pnpm monorepo</span><span class="chip">Self-contained HTML</span></div>
+      <div class="notes">
+        <div class="note warn"><div class="note-lbl">⚠ Known issues, logged honestly</div><code>pnpm install --frozen-lockfile</code> fails — the lockfile has no entry for an internal package, and it was generated by pnpm 10 while package.json pins pnpm 9.15.</div>
+        <div class="note tip"><div class="note-lbl">Security model</div>No hidden reasoning, no private prompts, no secrets or raw env vars are ever recorded. Replay is client-side, so session contents stay on the reviewer's machine unless deliberately published.</div>
+      </div>
+      <div class="connects">The viewer's SHA-256 implementation runs in plain JavaScript so it works fully offline from file:// — it has to be kept in sync with the core hashing package by hand.</div>
+    </div></div>
+  </div>
+
+  <!-- NADI -->
+  <div class="hack reveal" id="hk4">
+    <div class="hack-head" onclick="tog(this)">
+      <div class="hack-icon">✦</div>
+      <div class="hack-headmeta">
+        <div class="hack-top">
+          <span class="hack-name">Build with AI: Gemini Hackathon · Google DeepMind</span>
+          <span class="hack-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Kuala Lumpur</span>
+        </div>
+        <div class="hack-foot">
+          <span class="status submitted"><span class="sdot"></span>Submitted</span>
+          <span class="proj-name">Project: <span>Nadi</span></span>
+        </div>
+      </div>
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="hack-body"><div class="hack-body-inner">
+      <p class="intro">A culturally-aware AI health companion for Malaysia — highest obesity rate in Southeast Asia — built around the hidden caloric load in local staples like nasi lemak and roti canai, and the tropical heat that makes outdoor exercise harder.</p>
+      <div class="cols">
+        <div class="col"><div class="col-label">Three pillars</div><ul><li><strong>Meal AI</strong> — Gemini Flash Vision identifies Malaysian dishes from photos with ingredient-aware nutrition breakdowns</li><li><strong>Run Analyzer</strong> — processes Strava JSON for AI-powered performance insight, fatigue detection, and recovery advice</li><li><strong>Health Dashboard</strong> — visualises VO2 Max and weekly mileage to track "Nadi" (pulse) over time</li></ul></div>
+        <div class="col"><div class="col-label">Stack</div><ul><li>Next.js frontend</li><li>Python + FastAPI backend</li><li>Gemini 2.5 Flash for vision and insight generation</li><li>Supabase for secure health-log and run-history storage</li></ul></div>
+      </div>
+      <div class="chips"><span class="chip">Next.js</span><span class="chip">FastAPI</span><span class="chip">Gemini 2.5 Flash Vision</span><span class="chip">Supabase</span><span class="chip">Strava API</span></div>
+      <div class="connects">Built for a full-day, in-person, judged event in Kuala Lumpur run in collaboration with Google DeepMind.</div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<div class="footer reveal">
+  <h2>Total footprint</h2>
+  <div class="foot-grid">
+    <div class="foot-box">
+      <div class="foot-val">59</div>
+      <div class="foot-lbl">Core projects</div>
+      <div class="foot-desc">Distributed systems, neural mathematics, hardware kernels, CS fundamentals, cryptography, compilers, and career-targeted builds — including an 8-project active suite (P52–P59).</div>
+    </div>
+    <div class="foot-box">
+      <div class="foot-val">4</div>
+      <div class="foot-lbl">Hackathons</div>
+      <div class="foot-desc">Factory Guardian, Glasshouse, and Nadi submitted across OpenAI, Google DeepMind, and Agentic Cinema events. Strands agent build in progress.</div>
+    </div>
+    <div class="foot-box">
+      <div class="foot-val">Principal</div>
+      <div class="foot-lbl">Target level</div>
+      <div class="foot-desc">Mastering performance boundaries at distributed application, neural architecture, and bare-metal hardware levels at once. Rare in the industry, distinguishable in interviews.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// scroll reveal
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}
+  })
+},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// smooth nav offset
+document.querySelectorAll('.nav a').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){const y=t.getBoundingClientRect().top+window.scrollY-80;window.scrollTo({top:y,behavior:'smooth'})}
+  });
+});
+</script>
+</body>
+</html>

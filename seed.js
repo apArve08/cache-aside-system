@@ -1,6 +1,6 @@
 // seed.js
 const { Pool } = require('pg');
-const pool = new Pool({ connectionString: 'postgresql://admin:admin@localhost:5432/cachelab' });
+const pool = new Pool({ connectionString: 'postgresql://postgres:admin@localhost:5432/cachelab' });
 
 (async () => {
   const values = [];
