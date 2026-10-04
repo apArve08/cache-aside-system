@@ -19,12 +19,13 @@ async function updateLogStatus(req, res, next) {
       return res.status(404).json({ error: 'not found' });
     }
 
-    // delete cache key WHILE inside the still-uncommitted transaction
-    await redis.del(`log:${id}`);
-
     await client.query('COMMIT');
-    res.json(result.rows[0]);
 
+    // evict AFTER commit, then once more to clear any stale re-cache
+    await redis.del(`log:${id}`);
+    setTimeout(() => redis.del(`log:${id}`).catch(() => {}), 500);
+
+    res.json(result.rows[0]);
   } catch (err) {
     await client.query('ROLLBACK');
     next(err);

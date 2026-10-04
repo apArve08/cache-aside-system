@@ -34,6 +34,5 @@ app.get('/logs',
 );
 
 // server.js — add this route
-const updateLogStatus = require('./routes/writeLog');
 app.patch('/logs/:id', express.json(), updateLogStatus);
 app.listen(3000, () => console.log('Listening on :3000'));
