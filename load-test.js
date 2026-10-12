@@ -29,7 +29,7 @@ export default function () {
 
   check(res, {
     'status 200': (r) => r.status === 200,
-    'list returned a full page': (r) => ENDPOINT !== 'list' || r.body.length > 1000,
+    'list returned a full page': (r) => ENDPOINT !== 'list' || (r.body || '').length > 1000,
   });
   sleep(THINK);
 }

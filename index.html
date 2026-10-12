@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P2 · Distributed Cache-Aside System</title>
+<meta name="description" content="Redis cache-aside in front of PostgreSQL: Postgres CPU fell from ~41% to effectively idle under load, with throughput up ~1.8x.">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f5f5f7;
+  --card: #ffffff;
+  --line: #e3e3e6;
+  --grid: #ececef;
+  --axis: #c7c7cc;
+  --text: #1d1d1f;
+  --text-2: #6e6e73;
+  --text-3: #86868b;
+  --off: #2a78d6;
+  --on: #eb6834;
+  --ok: #1e7f3b;
+  --ok-bg: #e8f5ec;
+  --warn: #9a5b00;
+  --warn-bg: #fdf3e2;
+  --mid: #48484c;
+  --mid-bg: #efeff2;
+  --pop: #ffffff;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  --r: 18px;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --t-kw:#ad3da4; --t-str:#c4361f; --t-num:#1c3fd1; --t-fn:#2a6f77; --t-key:#1b6bb5; --t-var:#7a45b5; --t-flag:#8a5a00; --t-ok:#1d7a3e; --t-bad:#c4361f;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #000000; --card: #1c1c1e; --line: #2c2c2e; --grid: #2a2a2c; --axis: #48484a;
+    --text: #f5f5f7; --text-2: #a1a1a6; --text-3: #8e8e93;
+    --off: #3987e5; --on: #d95926;
+    --ok: #4cd07a; --ok-bg: #0f2a19; --warn: #f0b552; --warn-bg: #2d2210; --mid: #c7c7cc; --mid-bg: #2c2c2e;
+    --pop: #2c2c2e; --shadow: none;
+    --t-kw:#fc5fa3; --t-str:#fc7a6e; --t-num:#d9c97c; --t-fn:#6ec3b0; --t-key:#6bc2ff; --t-var:#cda1ff; --t-flag:#f0b552; --t-ok:#4cd07a; --t-bad:#fc7a6e;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #000000; --card: #1c1c1e; --line: #2c2c2e; --grid: #2a2a2c; --axis: #48484a;
+  --text: #f5f5f7; --text-2: #a1a1a6; --text-3: #8e8e93;
+  --off: #3987e5; --on: #d95926;
+  --ok: #4cd07a; --ok-bg: #0f2a19; --warn: #f0b552; --warn-bg: #2d2210; --mid: #c7c7cc; --mid-bg: #2c2c2e;
+  --pop: #2c2c2e; --shadow: none;
+  --t-kw:#fc5fa3; --t-str:#fc7a6e; --t-num:#d9c97c; --t-fn:#6ec3b0; --t-key:#6bc2ff; --t-var:#cda1ff; --t-flag:#f0b552; --t-ok:#4cd07a; --t-bad:#fc7a6e;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px 80px; }
+nav { position: sticky; top: 0; z-index: 10; backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; align-items: center; gap: 20px; height: 48px; padding-bottom: 0; overflow-x: auto; scrollbar-width: none; }
+nav .brand { font-weight: 600; font-size: 14px; white-space: nowrap; }
+nav a { color: var(--text-2); text-decoration: none; font-size: 13px; white-space: nowrap; }
+nav a:hover { color: var(--text); }
+nav a.portfolio-btn { color: #fff; background: var(--off); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+nav a.portfolio-btn:hover { color: #fff; filter: brightness(1.1); }
+nav a.portfolio-btn:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+.theme-btn { margin-left: auto; border: 1px solid var(--line); background: var(--card); color: var(--text-2); border-radius: 999px; font: inherit; font-size: 12px; padding: 4px 12px; cursor: pointer; white-space: nowrap; }
+
+header.hero { padding: 72px 0 40px; text-align: center; }
+.eyebrow { font-size: 13px; font-weight: 600; color: var(--on); letter-spacing: .02em; margin: 0 0 12px; }
+h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.07; letter-spacing: -.02em; font-weight: 700; margin: 0 auto 18px; max-width: 16ch; }
+.lede { font-size: clamp(17px, 2.2vw, 21px); color: var(--text-2); max-width: 40em; margin: 0 auto; }
+.lede strong { color: var(--text); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 28px; }
+.chip { font-size: 12px; color: var(--text-2); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+
+section { padding-top: 56px; scroll-margin-top: 56px; }
+h2 { font-size: clamp(26px, 3.6vw, 34px); letter-spacing: -.015em; line-height: 1.15; margin: 0 0 6px; font-weight: 700; }
+.sub { color: var(--text-2); margin: 0 0 24px; font-size: 17px; max-width: 46em; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 24px; box-shadow: var(--shadow); min-width: 0; }
+.card h3 { font-size: 17px; font-weight: 600; margin: 0; }
+.card .note { font-size: 13px; color: var(--text-2); margin: 4px 0 16px; }
+.grid-4 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.grid-2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+
+.kpi .label { font-size: 13px; color: var(--text-2); }
+.kpi .value { font-size: 44px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin: 6px 0 4px; font-variant-numeric: tabular-nums; }
+.kpi .from { font-size: 13px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 3px 10px; }
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.b-strong { color: var(--ok); background: var(--ok-bg); }
+.b-mod { color: var(--mid); background: var(--mid-bg); }
+.b-weak { color: var(--warn); background: var(--warn-bg); }
+
+.legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-2); margin-bottom: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.sw.off { background: var(--off); } .sw.on { background: var(--on); }
+.chart { position: relative; min-height: 262px; }
+.strip { position: relative; min-height: 170px; }
+.chart svg, .strip svg { display: block; width: 100%; height: auto; overflow: visible; }
+.tick { fill: var(--text-3); font-size: 11px; font-family: var(--font); }
+.vlabel { fill: var(--text); font-size: 12px; font-weight: 600; font-family: var(--font); font-variant-numeric: tabular-nums; }
+.tip { position: absolute; pointer-events: none; background: var(--pop); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.14); padding: 6px 10px; font-size: 12px; white-space: nowrap; display: none; z-index: 3; font-variant-numeric: tabular-nums; }
+.tip .h { color: var(--text-2); margin-bottom: 2px; }
+.tip .row { display: flex; align-items: center; gap: 6px; }
+.hit { cursor: default; }
+.viewtoggle { margin-top: 12px; font: inherit; font-size: 12px; color: var(--off); background: none; border: 0; padding: 0; cursor: pointer; }
+.datatable { display: none; margin-top: 10px; }
+.datatable.show { display: block; }
+
+.arch { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 12px; margin-bottom: 20px; }
+.node { border: 1px solid var(--line); border-radius: 14px; padding: 14px 12px; text-align: center; background: var(--bg); }
+.node b { display: block; font-size: 15px; }
+.node small { color: var(--text-2); font-size: 12px; }
+.node.app { border-color: var(--text-3); }
+.stores { display: grid; gap: 10px; }
+.arrow { color: var(--text-3); font-size: 20px; }
+.paths { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.path h4 { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+.path ol { margin: 0; padding-left: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; }
+.path li { counter-increment: s; display: grid; grid-template-columns: 24px 1fr; gap: 10px; font-size: 14px; color: var(--text-2); }
+.path li::before { content: counter(s); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 600; background: var(--mid-bg); color: var(--text); }
+.path code, td code, .caveats code { font-family: var(--mono); font-size: 12px; background: var(--mid-bg); padding: 1px 5px; border-radius: 5px; color: var(--text); }
+@media (max-width: 640px) {
+  .arch { grid-template-columns: 1fr; }
+  .arrow { transform: rotate(90deg); justify-self: center; }
+}
+
+.checks { display: grid; gap: 0; }
+.check { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: start; padding: 14px 0; border-top: 1px solid var(--line); }
+.check:first-child { border-top: 0; padding-top: 0; }
+.tick-ic { width: 22px; height: 22px; border-radius: 50%; background: var(--ok-bg); color: var(--ok); display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+.check b { font-size: 15px; font-weight: 600; display: block; }
+.check span { color: var(--text-2); font-size: 13px; }
+.wk { font-size: 12px; color: var(--text-3); white-space: nowrap; }
+
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+th { text-align: left; font-weight: 600; color: var(--text-2); padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td.n, th.n { text-align: right; }
+tr.median td { font-weight: 600; }
+.cfg { display: inline-flex; align-items: center; gap: 6px; }
+
+.caveats { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--text-2); font-size: 15px; }
+.lessons { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.lessons .card p { color: var(--text-2); font-size: 14px; margin: 6px 0 0; }
+
+
+.step > div { min-width: 0; }
+.step { grid-template-columns: 36px minmax(0, 1fr); }
+.code { position: relative; margin: 10px 0 12px; }
+.code .cap { font-size: 11px; font-weight: 600; letter-spacing: .02em; color: var(--text-3); margin: 0 0 4px; }
+.code pre { margin: 0; background: var(--mid-bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.6; color: var(--text); tab-size: 2; -webkit-overflow-scrolling: touch; }
+.code pre code { background: none; padding: 0; font-size: inherit; color: inherit; white-space: pre; }
+.code .c { color: var(--text-3); font-style: italic; }
+.code .k{color:var(--t-kw);font-weight:600}
+.code .s{color:var(--t-str)}
+.code .n{color:var(--t-num)}
+.code .f{color:var(--t-fn)}
+.code .y{color:var(--t-key)}
+.code .v{color:var(--t-var)}
+.code .g{color:var(--t-flag)}
+.code .ok{color:var(--t-ok);font-weight:600}
+.code .bad{color:var(--t-bad);font-weight:600}
+.code .p{color:var(--text-3)}
+
+.code button { position: absolute; top: 20px; right: 8px; font: inherit; font-size: 11px; color: var(--text-2); background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; cursor: pointer; }
+.code button:hover { color: var(--text); }
+.flow { display: grid; gap: 0; counter-reset: st; }
+.step { display: grid; grid-template-columns: 36px 1fr; gap: 16px; position: relative; padding-bottom: 22px; }
+.step:last-child { padding-bottom: 0; }
+.step::before { counter-increment: st; content: counter(st); width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 600; background: var(--text); color: var(--card); z-index: 1; }
+.step::after { content: ""; position: absolute; left: 13.5px; top: 30px; bottom: 2px; width: 1px; background: var(--line); }
+.step:last-child::after { display: none; }
+.step h4 { margin: 2px 0 4px; font-size: 16px; font-weight: 600; }
+.step p { margin: 0 0 8px; color: var(--text-2); font-size: 14px; }
+.gate { display: inline-block; font-size: 12px; line-height: 1.5; color: var(--ok); background: var(--ok-bg); border-radius: 8px; padding: 4px 10px; }
+.gate b { font-weight: 600; margin-right: 6px; }
+.gate code { background: none; padding: 0; color: inherit; }
+.traps { display: grid; gap: 0; }
+.trap { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; padding: 14px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.trap:first-child { border-top: 0; padding-top: 0; }
+.trap .was { color: var(--text-2); }
+.trap .now { color: var(--text); }
+.trap small { display: block; font-size: 11px; font-weight: 600; letter-spacing: .02em; color: var(--text-3); margin-bottom: 2px; }
+@media (max-width: 640px) { .trap { grid-template-columns: 1fr; } }
+footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--text-3); font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+footer a { color: var(--text-2); }
+</style>
+</head>
+<body>
+
+<nav aria-label="Sections">
+  <div class="wrap">
+    <a class="portfolio-btn" href="https://aparve08.github.io/portfolioV1/#top" rel="noopener">← Portfolio</a>
+    <span class="brand">P2 · Cache-Aside</span>
+    <a href="#results">Results</a>
+    <a href="#charts">Charts</a>
+    <a href="#how">How it works</a>
+    <a href="#develop">How I develop</a>
+    <a href="#tests">Correctness</a>
+    <a href="#runs">Every run</a>
+    <a href="#limits">Limits</a>
+    <button class="theme-btn" id="theme" type="button" aria-label="Toggle colour theme">Theme</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Distributed Cache-Aside System with Redis and PostgreSQL</p>
+    <h1>A Redis cache that takes Postgres off the hot path.</h1>
+    <p class="lede">Under 200 concurrent users, a cache-aside layer cut <strong>Postgres CPU from <span data-k="cpuOff"></span> to <span data-k="cpuOn"></span></strong> and served <strong><span data-k="tputX"></span> the requests</strong>, with no stale reads after updates.</p>
+    <div class="chips">
+      <span class="chip">Node.js · Express</span><span class="chip">Redis 7</span><span class="chip">PostgreSQL</span><span class="chip">Docker</span><span class="chip">k6</span><span class="chip">node:test</span>
+    </div>
+  </header>
+
+  <section id="results">
+    <h2>Headline results</h2>
+    <p class="sub">Median of three cache-off / cache-on pairs at 200 virtual users on the paginated list endpoint. Each card says how strongly the data supports it.</p>
+    <div class="grid-4">
+      <div class="card kpi">
+        <div class="label">Postgres CPU, cache on</div>
+        <div class="value" data-k="cpuOn"></div>
+        <div class="from">was <span data-k="cpuOff"></span> with cache off</div>
+        <span class="badge b-strong">Strong · no overlap</span>
+      </div>
+      <div class="card kpi">
+        <div class="label">Throughput</div>
+        <div class="value" data-k="tputX"></div>
+        <div class="from"><span data-k="tputOff"></span> → <span data-k="tputOn"></span> req/s</div>
+        <span class="badge b-mod">Moderate · all ON &gt; all OFF</span>
+      </div>
+      <div class="card kpi">
+        <div class="label">p95 latency</div>
+        <div class="value" data-k="p95Chg"></div>
+        <div class="from"><span data-k="p95Off"></span> → <span data-k="p95On"></span> ms</div>
+        <span class="badge b-weak">Weak · better in 2 of 3</span>
+      </div>
+      <div class="card kpi">
+        <div class="label">Redis hit rate</div>
+        <div class="value" data-k="hit"></div>
+        <div class="from">lower bound; lock polls count as misses</div>
+        <span class="badge b-strong">Strong · clean counters</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="charts">
+    <h2>Cache off vs on</h2>
+    <p class="sub">The capacity run is the median of three. The overload run at 3,000 users is a single pair, so read it as indicative.</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Postgres CPU</h3>
+        <p class="note">Mean over the run, summed across all Postgres processes.</p>
+        <div class="legend"><span><i class="sw off"></i>Cache off</span><span><i class="sw on"></i>Cache on</span></div>
+        <div class="chart" id="c-cpu" role="img" aria-label="Postgres CPU by load and cache setting"></div>
+        <button class="viewtoggle" data-for="t-cpu" type="button">Show as table</button>
+        <div class="datatable tablewrap" id="t-cpu"></div>
+      </div>
+      <div class="card">
+        <h3>Throughput</h3>
+        <p class="note">Requests per second. Both drop at 3,000 users because the laptop saturates.</p>
+        <div class="legend"><span><i class="sw off"></i>Cache off</span><span><i class="sw on"></i>Cache on</span></div>
+        <div class="chart" id="c-tput" role="img" aria-label="Throughput by load and cache setting"></div>
+        <button class="viewtoggle" data-for="t-tput" type="button">Show as table</button>
+        <div class="datatable tablewrap" id="t-tput"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Why three runs: run-to-run noise at 200 users</h3>
+      <p class="note">Each dot is one run, the bar is the median. Cache-off runs cluster tightly; cache-on runs spread almost 2×, yet every one beats every cache-off run.</p>
+      <div class="legend"><span><i class="sw off"></i>Cache off</span><span><i class="sw on"></i>Cache on</span></div>
+      <div class="strip" id="c-noise" role="img" aria-label="Throughput of each run at 200 users"></div>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <p class="sub">The Node app is the only coordinator. Redis and Postgres never talk to each other, so every consistency guarantee comes from the order the app touches them.</p>
+    <div class="card">
+      <div class="arch" aria-label="Architecture: client to Node app to Redis and PostgreSQL">
+        <div class="node"><b>Client</b><small>browser · k6</small></div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node app"><b>Node app :3000</b><small>Express · cache-aside middleware</small></div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="stores">
+          <div class="node"><b>Redis :6379</b><small>fast tier · TTL 300 s</small></div>
+          <div class="node"><b>PostgreSQL :5432</b><small>source of truth · 20,000 rows</small></div>
+        </div>
+      </div>
+      <div class="paths">
+        <div class="path">
+          <h4>Read path · <code>GET /logs?page=N</code></h4>
+          <ol>
+            <li><span>Build key <code>logs:page:N</code> and <code>GET</code> it from Redis.</span></li>
+            <li><span>Hit: return the cached JSON. Postgres is never touched.</span></li>
+            <li><span>Miss: take a <code>SET NX</code> lock so only one request rebuilds the entry.</span></li>
+            <li><span>Lock holder queries Postgres and writes the result with a TTL; waiters poll and read it.</span></li>
+          </ol>
+        </div>
+        <div class="path">
+          <h4>Write path · <code>PATCH /logs/:id</code></h4>
+          <ol>
+            <li><span><code>BEGIN</code>, <code>UPDATE</code> the row, <code>COMMIT</code>.</span></li>
+            <li><span>After commit, <code>DEL log:id</code> so the next read sees the new value.</span></li>
+            <li><span>Delete again 500 ms later to clear any stale value a racing read re-cached.</span></li>
+            <li><span>The TTL is the backstop for a crash between commit and delete.</span></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="develop">
+    <h2>How I develop</h2>
+    <p class="sub">The same loop for every layer: draw it, build the smallest piece, prove it by hand, then lock the proof into something repeatable before moving on. The commands and snippets below are the ones I used, trimmed for space.</p>
+    <div class="card">
+      <div class="flow">
+        <div class="step"><div>
+          <h4>Draw the system before writing code</h4>
+          <p>Architecture and the read and write paths first, so I know which component owns which decision. Here the Node app is the only coordinator, and that drove every later choice.</p>
+          <div class="code" data-lang="none"><p class="cap">Sketch</p><button type="button" aria-label="Copy code">Copy</button><pre><code>read:   GET key ─ hit? ─▶ return JSON
+                 └ miss ─▶ lock ─▶ query Postgres ─▶ SET key EX 300
+
+write:  BEGIN ─▶ UPDATE ─▶ COMMIT ─▶ DEL key ─▶ DEL key again (+500 ms)</code></pre></div>
+          <span class="gate"><b>Gate</b> I can explain each arrow</span>
+        </div></div>
+        <div class="step"><div>
+          <h4>Build one layer at a time</h4>
+          <p>Docker for Redis and Postgres, a seed script for 20,000 rows, then a connection check, before any business logic sits on top. If something breaks later, it is the logic, not the infrastructure.</p>
+          <div class="code" data-lang="yaml"><p class="cap">docker-compose.yml</p><button type="button" aria-label="Copy code">Copy</button><pre><code>services:
+  postgres:                      <span class="c"># my run used a local Postgres; Redis ran in Docker</span>
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: admin, POSTGRES_PASSWORD: admin, POSTGRES_DB: cachelab }
+    ports: [&quot;5432:5432&quot;]
+  redis:
+    image: redis:7-alpine
+    ports: [&quot;6379:6379&quot;]
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru</code></pre></div>
+          <div class="code" data-lang="sh"><p class="cap">Terminal</p><button type="button" aria-label="Copy code">Copy</button><pre><code>docker compose up -d
+node seed.js 20000                                    <span class="c"># refuses to run twice</span>
+psql &quot;$DATABASE_URL&quot; -c &quot;SELECT COUNT(*) FROM logs;&quot;  <span class="c"># expect 20000</span></code></pre></div>
+          <span class="gate"><b>Gate</b> both stores answer, row count is exactly 20,000</span>
+        </div></div>
+        <div class="step"><div>
+          <h4>Prove each layer by hand</h4>
+          <p>Two <code>curl</code> calls and a <code>redis-cli TTL</code> show MISS then HIT. A PATCH followed by a read shows the old value is gone. Only then do I stack the next layer on top.</p>
+          <div class="code" data-lang="sh"><p class="cap">Terminal</p><button type="button" aria-label="Copy code">Copy</button><pre><code>curl -si localhost:3000/logs/42 | grep -i x-cache      <span class="c"># MISS</span>
+curl -si localhost:3000/logs/42 | grep -i x-cache      <span class="c"># HIT</span>
+redis-cli TTL log:42                                   <span class="c"># counting down from 300</span>
+
+curl -s -X PATCH localhost:3000/logs/42 \
+  -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;status&quot;:&quot;done&quot;}&#x27;
+sleep 1                                                <span class="c"># let the delayed DEL finish</span>
+curl -si localhost:3000/logs/42 | grep -iE &quot;x-cache|status&quot;   <span class="c"># MISS, status done</span></code></pre></div>
+          <span class="gate"><b>Gate</b> X-Cache goes MISS → HIT, and a PATCH forces a fresh read</span>
+        </div></div>
+        <div class="step"><div>
+          <h4>Make the proof repeatable, then try to break it</h4>
+          <p>Hand checks become a <code>node:test</code> suite. Then I remove the cache eviction on purpose. A test that has never failed might be asserting nothing, so two of three failing is what makes the passing run evidence.</p>
+          <div class="code" data-lang="js"><p class="cap">test/cache.test.js (excerpt)</p><button type="button" aria-label="Copy code">Copy</button><pre><code>test(&#x27;2. no stale cache after concurrent reads during writes&#x27;, async () =&gt; {
+  for (let i = 2; i &lt; 22; i++) {
+    const status = `v${i}`;
+    <span class="c">// one write and 20 reads at the same moment</span>
+    await Promise.all([patch(id, status), ...Array.from({ length: 20 }, () =&gt; get(id))]);
+    await sleep(700);                                  <span class="c">// let the delayed DEL finish</span>
+    const cached = await redis.get(`log:${id}`);
+    if (cached) assert.equal(JSON.parse(cached).status, status, `stale cache at iteration ${i}`);
+  }
+});</code></pre></div>
+          <div class="code" data-lang="sh"><p class="cap">Break it on purpose</p><button type="button" aria-label="Copy code">Copy</button><pre><code>npm test        <span class="c"># pass 3, fail 0</span>
+<span class="c"># comment out both redis.del lines in routes/writeLog.js, then restart the server</span>
+npm test        <span class="c"># tests 1 and 2 fail, test 3 still passes</span>
+<span class="c"># restore the lines, restart, confirm pass 3 again</span></code></pre></div>
+          <span class="gate"><b>Gate</b> tests pass on correct code and fail on broken code</span>
+        </div></div>
+        <div class="step"><div>
+          <h4>Keep a control group</h4>
+          <p>One <code>CACHE_ENABLED</code> switch runs identical code with Redis bypassed, so the only difference between runs is the cache. Without it, an improvement could be anything.</p>
+          <div class="code" data-lang="js"><p class="cap">middleware/cacheAside.js: first lines of the handler</p><button type="button" aria-label="Copy code">Copy</button><pre><code>if (process.env.CACHE_ENABLED === &#x27;false&#x27;) {
+  res.set(&#x27;X-Cache&#x27;, &#x27;BYPASS&#x27;);                       <span class="c">// identical code, Redis skipped</span>
+  return res.json(await queryFn(req, pg));
+}</code></pre></div>
+          <div class="code" data-lang="sh"><p class="cap">Terminal</p><button type="button" aria-label="Copy code">Copy</button><pre><code>CACHE_ENABLED=false node server.js
+curl -si &quot;localhost:3000/logs?page=1&quot; | grep -i x-cache   <span class="c"># must say BYPASS</span></code></pre></div>
+          <span class="gate"><b>Gate</b> OFF responses carry <code>X-Cache: BYPASS</code></span>
+        </div></div>
+        <div class="step"><div>
+          <h4>Measure with a fixed protocol</h4>
+          <p>Flush Redis and reset its counters before every run. Start the CPU sampler and k6 from one script so they cannot drift apart. Run three pairs and report the median, because a single run can mislead.</p>
+          <div class="code" data-lang="sh"><p class="cap">Terminal · one run (repeat for OFF and ON, three pairs)</p><button type="button" aria-label="Copy code">Copy</button><pre><code>R=$(docker ps -qf name=redis)
+docker exec $R redis-cli FLUSHALL
+docker exec $R redis-cli CONFIG RESETSTAT              <span class="c"># hit rate now covers this run only</span>
+
+<span class="c"># sampler and k6 start together: sum CPU of every postgres process, once a second (macOS)</span>
+top -l 62 -s 1 -stats command,cpu \
+  | awk &#x27;/^Processes:/ {if (n) print s; s=0; n++} /^postgres/ {s+=$2} END {print s}&#x27; \
+  &gt; pg-cpu-on-1.log &amp;
+ENDPOINT=list THINK=0 TARGET=200 k6 run --summary-export=on-list-1.json load-test.js
+wait
+
+docker exec $R redis-cli INFO stats | grep -E &quot;keyspace_(hits|misses)&quot;
+awk &#x27;NR&gt;1 {s+=$1; n++} END {printf &quot;avg postgres CPU: %.1f%%\n&quot;, s/n}&#x27; pg-cpu-on-1.log</code></pre></div>
+          <span class="gate"><b>Gate</b> same steps every run, medians not single results</span>
+        </div></div>
+        <div class="step"><div>
+          <h4>Write down what the data actually supports</h4>
+          <p>Each claim gets a strength: strong, moderate or weak. Limits go on the page next to the results, and any change to a script mid-campaign is noted and dated instead of made silently.</p>
+          <div class="code" data-lang="md"><p class="cap">Results note · template</p><button type="button" aria-label="Copy code">Copy</button><pre><code>| Run   | req/s  | p95 (ms) | Postgres CPU | Hit rate |
+|-------|--------|----------|--------------|----------|
+| OFF 1 | 7,824  | 27.12    | 30.9%        | n/a      |
+| ON 1  | 17,266 | 13.95    | 0.1%         | not captured |
+| Median OFF / ON | 7,824 / 13,900 | 27.34 / 20.52 | 41.2% / 0.1% | 99.93% |
+
+Findings
+1. Postgres CPU ~41% to ~0.1%: strong (no overlap between runs)
+2. Throughput ~1.8x: moderate (every ON run beat every OFF run)
+3. p95: weak (ON 3 was slower than every OFF run)
+
+Caveats: one laptop, 3,000-VU pair is a single run, CPU summed across cores</code></pre></div>
+          <span class="gate"><b>Gate</b> nothing is stated more strongly than the numbers allow</span>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Traps I hit, and the habit each one left</h3>
+      <p class="note">Real problems from this build. Each changed how I work.</p>
+      <div class="traps">
+        <div class="trap">
+          <div class="was"><small>WHAT WENT WRONG</small>The server had never booted: a duplicated <code>require</code> was a syntax error, so no cache behaviour was proven yet.</div>
+          <div class="now"><small>HABIT</small>Boot and hit the endpoint before claiming a week is done.</div>
+        </div>
+        <div class="trap">
+          <div class="was"><small>WHAT WENT WRONG</small>Early load tests returned ~345-byte bodies. The script was still testing the single-record route, not the list.</div>
+          <div class="now"><small>HABIT</small>Tests assert what they measure: a response-size check now fails loudly.</div>
+        </div>
+        <div class="trap">
+          <div class="was"><small>WHAT WENT WRONG</small>Postgres CPU logs were all zeros because the sampler and k6 were started by hand and never overlapped.</div>
+          <div class="now"><small>HABIT</small>Script the timing so two tools cannot drift apart.</div>
+        </div>
+        <div class="trap">
+          <div class="was"><small>WHAT WENT WRONG</small>An old server still held port 3000, so debug logging and code edits went to a stale process.</div>
+          <div class="now"><small>HABIT</small>Kill the port and restart the server before every test or benchmark.</div>
+        </div>
+        <div class="trap">
+          <div class="was"><small>WHAT WENT WRONG</small>Cumulative Redis counters made the first hit rate meaningless, and one cache-on run was nearly half as fast as another.</div>
+          <div class="now"><small>HABIT</small>Reset counters per run and repeat three times. Report the median.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tests">
+    <h2>Correctness</h2>
+    <p class="sub">Speed only matters if the data is right. The automated tests were also run with cache eviction removed, to prove they catch the bug.</p>
+    <div class="card">
+      <div class="checks" id="checks"></div>
+    </div>
+  </section>
+
+  <section id="runs">
+    <h2>Every run</h2>
+    <p class="sub">All load-test runs behind the figures above. A blank hit rate means it was not captured or does not apply.</p>
+    <div class="card">
+      <div class="tablewrap"><table id="runs-table" aria-label="All load-test runs"></table></div>
+    </div>
+  </section>
+
+  <section id="limits">
+    <h2>What I learned, and the limits</h2>
+    <p class="sub">The careful reading of the numbers is part of the result.</p>
+    <div class="lessons">
+      <div class="card"><h3>Caching pays for expensive queries</h3><p>Single-row primary-key lookups showed no clear gain. A sorted 50-row page did, because the cache had real work to replace.</p></div>
+      <div class="card"><h3>Check the test measures the right thing</h3><p>Early runs returned ~345-byte bodies: the old script was still hitting the single-record route. A body-size check now fails loudly.</p></div>
+      <div class="card"><h3>One run is an anecdote</h3><p>Identical cache-on runs ranged from 9.3k to 17.3k req/s. The median of three kept a bad run from deciding the conclusion.</p></div>
+      <div class="card"><h3>Tests must be able to fail</h3><p>Commenting out the eviction made two of three tests fail with clear messages, which is what makes the passing run evidence.</p></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Limits</h3>
+      <p class="note">Stated so the results are not over-read.</p>
+      <ul class="caveats">
+        <li>k6, Node, Redis and Postgres shared one laptop, so client and server competed for CPU.</li>
+        <li>The 3,000-user pair is a single run. Its cache-on failures (0.89%) were client-side connection timeouts; the server logged no errors.</li>
+        <li>Postgres CPU is summed across cores, so it can exceed one core's worth.</li>
+        <li>Built in JavaScript with <code>node-redis</code> and a local Postgres, not the TypeScript / <code>ioredis</code> / Dockerised Postgres in the original spec.</li>
+        <li>A process crash between <code>COMMIT</code> and the cache delete is not tested; the TTL bounds the staleness.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>P2 Distributed Cache-Aside System · Ap (Arveend)</span>
+    <span>Load tests 6–7 Oct 2026 · Integration tests 7 Oct 2026</span>
+  </footer>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const RUNS = [
+  { id: "200-OFF-1", vus: 200,  cfg: "OFF", run: 1, rps: 7824,  p95: 27.12,   cpu: 30.9, hit: null,   fail: 0 },
+  { id: "200-OFF-2", vus: 200,  cfg: "OFF", run: 2, rps: 7854,  p95: 27.34,   cpu: 41.6, hit: null,   fail: 0 },
+  { id: "200-OFF-3", vus: 200,  cfg: "OFF", run: 3, rps: 7318,  p95: 34.26,   cpu: 41.2, hit: null,   fail: 0 },
+  { id: "200-ON-1",  vus: 200,  cfg: "ON",  run: 1, rps: 17266, p95: 13.95,   cpu: 0.1,  hit: null,   fail: 0 },
+  { id: "200-ON-2",  vus: 200,  cfg: "ON",  run: 2, rps: 13900, p95: 20.52,   cpu: 0.0,  hit: 99.991, fail: 0 },
+  { id: "200-ON-3",  vus: 200,  cfg: "ON",  run: 3, rps: 9263,  p95: 37.62,   cpu: 0.1,  hit: 99.864, fail: 0 },
+  { id: "3000-OFF-1",vus: 3000, cfg: "OFF", run: 1, rps: 4501,  p95: 1050.26, cpu: 35.5, hit: null,   fail: 0 },
+  { id: "3000-ON-1", vus: 3000, cfg: "ON",  run: 1, rps: 9485,  p95: 346.37,  cpu: 0.1,  hit: 99.77,  fail: 0.89 }
+];
+const CHECKS = [
+  ["Cache-aside read path", "WK 06", "First GET returns X-Cache: MISS, the next returns HIT."],
+  ["PATCH invalidation", "WK 07", "Read after an update is a MISS with the new value, then a HIT."],
+  ["Stampede lock (SET NX)", "WK 07", "50 simultaneous requests on a cold key: 1 MISS, 49 HIT-WAIT, one Postgres query."],
+  ["Test 1 · create → cache → update → fresh read", "WK 07", "Fails without eviction: “PATCH should evict the cache key”."],
+  ["Test 2 · 20 rounds of 1 write vs 20 concurrent reads", "WK 07", "Fails without eviction: “stale cache at iteration 2”."],
+  ["Test 3 · PATCH on a missing row returns 404", "WK 07", "Keeps passing without eviction, as it should."]
+];
+
+const median = (a) => { a = a.filter((v) => v != null).sort((x, y) => x - y); const n = a.length; if (!n) return null; return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2; };
+const groups = [];
+for (const vus of [200, 3000]) for (const cfg of ["OFF", "ON"]) {
+  const g = RUNS.filter((r) => r.vus === vus && r.cfg === cfg);
+  groups.push({ vus, cfg, n: g.length, rps: median(g.map((r) => r.rps)), p95: median(g.map((r) => r.p95)), cpu: median(g.map((r) => r.cpu)), hit: median(g.map((r) => r.hit)) });
+}
+const G = (vus, cfg) => groups.find((g) => g.vus === vus && g.cfg === cfg);
+
+const fmt = {
+  int: (v) => Math.round(v).toLocaleString("en-US"),
+  pct: (v) => (v < 1 ? v.toFixed(1) : v.toFixed(1)) + "%",
+  x: (v) => v.toFixed(1) + "×",
+  signed: (v) => (v < 0 ? "−" : "+") + Math.abs(v).toFixed(0) + "%",
+  ms: (v) => v.toLocaleString("en-US", { maximumFractionDigits: 1 })
+};
+const off = G(200, "OFF"), on = G(200, "ON");
+const K = {
+  cpuOff: fmt.pct(off.cpu), cpuOn: fmt.pct(on.cpu),
+  tputX: fmt.x(on.rps / off.rps), tputOff: fmt.int(off.rps), tputOn: fmt.int(on.rps),
+  p95Chg: fmt.signed((on.p95 / off.p95 - 1) * 100), p95Off: fmt.ms(off.p95), p95On: fmt.ms(on.p95),
+  hit: on.hit.toFixed(2) + "%"
+};
+document.querySelectorAll("[data-k]").forEach((el) => (el.textContent = K[el.dataset.k]));
+
+const SVGNS = "http://www.w3.org/2000/svg";
+const mk = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const tip = document.getElementById("tip");
+function showTip(ev, head, rows) {
+  tip.textContent = "";
+  const h = document.createElement("div"); h.className = "h"; h.textContent = head; tip.appendChild(h);
+  rows.forEach(([color, label]) => {
+    const r = document.createElement("div"); r.className = "row";
+    const s = document.createElement("i"); s.className = "sw"; s.style.background = color;
+    r.append(s, label); tip.appendChild(r);
+  });
+  tip.style.display = "block";
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let x = ev.pageX - tw / 2, y = ev.pageY - th - 14;
+  x = Math.max(8 + window.scrollX, Math.min(x, window.scrollX + document.documentElement.clientWidth - tw - 8));
+  if (y < window.scrollY + 56) y = ev.pageY + 18;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+const hideTip = () => (tip.style.display = "none");
+const niceMax = (v) => { const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= v) return m * p; return 10 * p; };
+const groupName = (vus) => vus.toLocaleString("en-US") + " users · " + (G(vus, "ON").n > 1 ? "median of " + G(vus, "ON").n : "single run");
+
+function barChart(el, field, valFmt, tickFmt) {
+  el.textContent = "";
+  const W = Math.max(300, el.clientWidth), H = 262, mt = 24, mb = 52;
+  const colors = { OFF: css("--off"), ON: css("--on") };
+  const max = niceMax(Math.max(...groups.map((g) => g[field])) * 1.12);
+  const q = max / 4, nT = q % Math.pow(10, Math.floor(Math.log10(q))) === 0 ? 4 : 5;
+  const ticks = Array.from({ length: nT + 1 }, (_, i) => (max / nT) * i);
+  const svg = mk("svg", { viewBox: `0 0 ${W} ${H}` }, el);
+  const y = (v) => H - mb - (v / max) * (H - mb - mt);
+  const tg = mk("g", {}, svg);
+  let ml = 0;
+  ticks.forEach((t) => { const tx = mk("text", { x: 0, y: y(t), dy: "0.32em", class: "tick" }, tg); tx.textContent = tickFmt(t); ml = Math.max(ml, tx.getComputedTextLength()); });
+  ml += 10;
+  ticks.forEach((t) => mk("line", { x1: ml, x2: W, y1: y(t), y2: y(t), stroke: css("--grid"), "stroke-width": 1 }, svg.insertBefore(mk("g", {}), tg)));
+  mk("line", { x1: ml, x2: W, y1: H - mb, y2: H - mb, stroke: css("--axis") }, svg);
+  const loads = [200, 3000], gw = (W - ml) / loads.length, bw = Math.min(40, gw * 0.24), gap = 6;
+  loads.forEach((vus, i) => {
+    const cx = ml + gw * i + gw / 2;
+    const lab = mk("text", { x: cx, y: H - mb + 20, "text-anchor": "middle", class: "tick" }, svg);
+    mk("tspan", { x: cx, style: "fill:var(--text-2)" }, lab).textContent = vus.toLocaleString("en-US") + " users";
+    mk("tspan", { x: cx, dy: "1.3em" }, lab).textContent = G(vus, "ON").n > 1 ? "median of " + G(vus, "ON").n : "single run";
+    ["OFF", "ON"].forEach((cfg, j) => {
+      const g = G(vus, cfg), v = g[field];
+      const x = cx + (j === 0 ? -bw - gap / 2 : gap / 2);
+      const top = Math.min(y(v), H - mb - 3), h = H - mb - top;
+      const r = Math.min(4, bw / 2, h);
+      mk("path", { d: `M${x},${H - mb} V${top + r} Q${x},${top} ${x + r},${top} H${x + bw - r} Q${x + bw},${top} ${x + bw},${top + r} V${H - mb} Z`, fill: colors[cfg] }, svg);
+      const vl = mk("text", { x: x + bw / 2, y: top - 7, "text-anchor": "middle", class: "vlabel" }, svg); vl.textContent = valFmt(v);
+      const hit = mk("rect", { x: x - 4, y: mt - 10, width: bw + 8, height: H - mb - mt + 10, fill: "transparent", class: "hit" }, svg);
+      hit.addEventListener("mousemove", (ev) => showTip(ev, groupName(vus), [[colors[cfg], (cfg === "ON" ? "Cache on" : "Cache off") + ": " + valFmt(v)]]));
+      hit.addEventListener("mouseleave", hideTip);
+    });
+  });
+}
+
+function strip(el) {
+  el.textContent = "";
+  const W = Math.max(300, el.clientWidth), H = 170, mt = 10, mb = 32;
+  const colors = { OFF: css("--off"), ON: css("--on") };
+  const svg = mk("svg", { viewBox: `0 0 ${W} ${H}` }, el);
+  const rows = ["OFF", "ON"], names = { OFF: "Cache off", ON: "Cache on" };
+  const band = (H - mt - mb) / 2;
+  let ml = 0;
+  const labs = rows.map((c, i) => { const t = mk("text", { x: 0, y: mt + band * i + band / 2, dy: "0.32em", class: "tick" }, svg); t.textContent = names[c]; ml = Math.max(ml, t.getComputedTextLength()); return t; });
+  ml += 18;
+  const pts = RUNS.filter((r) => r.vus === 200);
+  const max = niceMax(Math.max(...pts.map((p) => p.rps)) * 1.05);
+  const x = (v) => ml + (v / max) * (W - ml - 14);
+  const step = max / 4;
+  for (let t = 0; t <= max + 1; t += step) {
+    mk("line", { x1: x(t), x2: x(t), y1: mt, y2: H - mb, stroke: css("--grid") }, svg);
+    const tx = mk("text", { x: x(t), y: H - mb + 18, "text-anchor": "middle", class: "tick" }, svg); tx.textContent = t >= 1000 ? t / 1000 + "k" : t;
+  }
+  rows.forEach((c, i) => {
+    const cy = mt + band * i + band / 2, m = G(200, c).rps;
+    mk("line", { x1: x(m), x2: x(m), y1: cy - band * 0.32, y2: cy + band * 0.32, stroke: colors[c], "stroke-width": 2, "stroke-linecap": "round" }, svg);
+    pts.filter((p) => p.cfg === c).forEach((p) => {
+      const dot = mk("circle", { cx: x(p.rps), cy, r: 8, fill: colors[c], "fill-opacity": 0.85, stroke: css("--card"), "stroke-width": 2 }, svg);
+      const hit = mk("circle", { cx: x(p.rps), cy, r: 16, fill: "transparent", class: "hit" }, svg);
+      hit.addEventListener("mousemove", (ev) => { dot.setAttribute("fill-opacity", 1); showTip(ev, names[c] + " · run " + p.run, [[colors[c], fmt.int(p.rps) + " req/s"], [colors[c], "p95 " + fmt.ms(p.p95) + " ms"]]); });
+      hit.addEventListener("mouseleave", () => { dot.setAttribute("fill-opacity", 0.85); hideTip(); });
+    });
+  });
+}
+
+function miniTable(el, field, valFmt, head) {
+  el.textContent = "";
+  const t = document.createElement("table");
+  const thead = t.createTHead().insertRow();
+  ["Load", "Cache off", "Cache on"].forEach((h, i) => { const th = document.createElement("th"); th.textContent = i ? h + " (" + head + ")" : h; if (i) th.className = "n"; thead.appendChild(th); });
+  const tb = t.createTBody();
+  [200, 3000].forEach((vus) => { const r = tb.insertRow(); r.insertCell().textContent = groupName(vus); ["OFF", "ON"].forEach((c) => { const td = r.insertCell(); td.className = "n"; td.textContent = valFmt(G(vus, c)[field]); }); });
+  el.appendChild(t);
+}
+
+function runsTable() {
+  const t = document.getElementById("runs-table"); t.textContent = "";
+  const cols = [["Run", null], ["Users", "n"], ["Cache", null], ["req/s", "n"], ["p95 (ms)", "n"], ["Postgres CPU", "n"], ["Hit rate", "n"], ["Failed", "n"]];
+  const hr = t.createTHead().insertRow();
+  cols.forEach(([h, c]) => { const th = document.createElement("th"); th.textContent = h; if (c) th.className = c; hr.appendChild(th); });
+  const tb = t.createTBody();
+  const cell = (r, text, cls) => { const td = r.insertCell(); td.textContent = text; if (cls) td.className = cls; return td; };
+  const cfgCell = (r, c) => { const td = r.insertCell(); const s = document.createElement("span"); s.className = "cfg"; const i = document.createElement("i"); i.className = "sw " + c.toLowerCase(); s.append(i, c === "ON" ? "On" : "Off"); td.appendChild(s); };
+  RUNS.forEach((x) => {
+    const r = tb.insertRow();
+    cell(r, x.id); cell(r, fmt.int(x.vus), "n"); cfgCell(r, x.cfg); cell(r, fmt.int(x.rps), "n"); cell(r, x.p95.toFixed(2), "n");
+    cell(r, x.cpu.toFixed(1) + "%", "n"); cell(r, x.hit == null ? "" : x.hit.toFixed(3) + "%", "n"); cell(r, x.fail.toFixed(2) + "%", "n");
+  });
+  ["OFF", "ON"].forEach((c) => {
+    const g = G(200, c), r = tb.insertRow(); r.className = "median";
+    cell(r, "Median 200 " + c); cell(r, "200", "n"); cfgCell(r, c); cell(r, fmt.int(g.rps), "n"); cell(r, g.p95.toFixed(2), "n");
+    cell(r, g.cpu.toFixed(1) + "%", "n"); cell(r, g.hit == null ? "" : g.hit.toFixed(2) + "%", "n"); cell(r, "0.00%", "n");
+  });
+}
+
+function checks() {
+  const box = document.getElementById("checks");
+  CHECKS.forEach(([name, wk, ev]) => {
+    const d = document.createElement("div"); d.className = "check";
+    const ic = document.createElement("div"); ic.className = "tick-ic"; ic.setAttribute("aria-label", "Pass"); ic.textContent = "✓";
+    const txt = document.createElement("div"); const b = document.createElement("b"); b.textContent = name; const s = document.createElement("span"); s.textContent = ev; txt.append(b, s);
+    const w = document.createElement("div"); w.className = "wk"; w.textContent = wk + " · Pass";
+    d.append(ic, txt, w); box.appendChild(d);
+  });
+}
+
+function drawAll() {
+  barChart(document.getElementById("c-cpu"), "cpu", (v) => v.toFixed(1) + "%", (t) => Math.round(t) + "%");
+  barChart(document.getElementById("c-tput"), "rps", (v) => fmt.int(v), (t) => (t >= 1000 ? t / 1000 + "k" : String(t)));
+  strip(document.getElementById("c-noise"));
+}
+
+miniTable(document.getElementById("t-cpu"), "cpu", (v) => v.toFixed(1) + "%", "%");
+miniTable(document.getElementById("t-tput"), "rps", (v) => fmt.int(v), "req/s");
+runsTable(); checks(); drawAll();
+
+document.querySelectorAll(".viewtoggle").forEach((b) => b.addEventListener("click", () => {
+  const t = document.getElementById(b.dataset.for); const s = t.classList.toggle("show");
+  b.textContent = s ? "Hide table" : "Show as table";
+}));
+
+
+/* tiny syntax highlighter: per-language regex tokenizer, colours come from CSS vars */
+(function () {
+  const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const sp = (c, t) => '<span class="' + c + '">' + esc(t) + "</span>";
+  const JSK = "const|let|var|await|async|function|return|if|else|for|while|new|true|false|null|undefined|of|in|throw|try|catch";
+  const CMD = "docker|node|psql|curl|redis-cli|npm|sleep|top|awk|wait|grep|k6|sed|cd|echo|export";
+  const L = {
+    js: { re: new RegExp("(\\/\\/.*)|('(?:\\\\.|[^'\\\\\\n])*'|\"(?:\\\\.|[^\"\\\\\\n])*\"|`(?:\\\\.|[^`\\\\])*`)|(\\b\\d+(?:\\.\\d+)?\\b)|\\b(" + JSK + ")\\b|(\\b[A-Za-z_$][\\w$]*)(?=\\()|(=>)", "g"),
+          map: ["c", "s", "n", "k", "f", "k"] },
+    sh: { re: new RegExp("((?:^|\\s)#.*)|('[^'\\n]*'|\"[^\"\\n]*\")|(\\$\\([^)]*\\)|\\$\\{[^}]*\\}|\\$\\w+)|(\\s-{1,2}[A-Za-z][\\w-]*)|(\\b[A-Z][A-Z_]*(?==))|(?:^|(?<=[|;(]\\s?)|(?<=\\n))\\s*\\b(" + CMD + ")\\b|(\\b\\d+(?:\\.\\d+)?\\b)", "gm"),
+          map: ["c", "s", "v", "g", "v", "f", "n"] },
+    yaml: { re: /(#.*)|('[^'\n]*'|"[^"\n]*")|^([ \t]*(?:- )?)([\w.-]+)(?=:)|(\b\d+(?:\.\d+)?\b)|\b(true|false)\b/gm,
+            map: ["c", "s", "_", "y", "n", "k"] },
+    md: { re: /(\|[-| ]*\|?)|(\b(?:strong)\b)|(\b(?:moderate)\b)|(\bweak\b)|(\b\d[\d,]*(?:\.\d+)?%?)/g,
+          map: ["p", "ok", "g", "bad", "n"] },
+  };
+  document.querySelectorAll(".code[data-lang]").forEach((box) => {
+    const lang = L[box.dataset.lang]; const code = box.querySelector("code");
+    if (!lang) return;
+    const src = code.textContent; let out = "", last = 0, m;
+    lang.re.lastIndex = 0;
+    while ((m = lang.re.exec(src))) {
+      if (m[0] === "") { lang.re.lastIndex++; continue; }
+      out += esc(src.slice(last, m.index));
+      let gi = -1;
+      for (let i = 1; i < m.length; i++) if (m[i] !== undefined && lang.map[i - 1] !== "_") { gi = i; break; }
+      if (gi === -1) { out += esc(m[0]); }
+      else {
+        const lead = m[0].indexOf(m[gi]);
+        out += esc(m[0].slice(0, lead)) + sp(lang.map[gi - 1], m[gi]) + esc(m[0].slice(lead + m[gi].length));
+      }
+      last = m.index + m[0].length;
+    }
+    code.innerHTML = out + esc(src.slice(last));
+  });
+})();
+
+document.querySelectorAll(".code button").forEach((b) => b.addEventListener("click", async () => {
+  const text = b.parentElement.querySelector("code").textContent;
+  try { await navigator.clipboard.writeText(text); b.textContent = "Copied"; }
+  catch (e) {
+    const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); b.textContent = "Copied"; } catch (e2) { b.textContent = "Press Ctrl+C"; }
+    ta.remove();
+  }
+  setTimeout(() => (b.textContent = "Copy"), 1500);
+}));
+let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawAll, 120); });
+const mq = window.matchMedia("(prefers-color-scheme: dark)");
+mq.addEventListener("change", drawAll);
+document.getElementById("theme").addEventListener("click", () => {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : mq.matches;
+  root.dataset.theme = dark ? "light" : "dark";
+  try { localStorage.setItem("p2-theme", root.dataset.theme); } catch (e) {}
+  drawAll();
+});
+try { const s = localStorage.getItem("p2-theme"); if (s) { document.documentElement.dataset.theme = s; drawAll(); } } catch (e) {}
+</script>
+</body>
+</html>
